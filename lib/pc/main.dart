@@ -6,8 +6,8 @@ List<NavigationPaneItem> pages = [
       body: const Home(),
       title: const Text('主页')),
   PaneItem(
-      icon: const Icon(FluentIcons.home),
-      body: const Home(),
+      icon: const Icon(FluentIcons.settings),
+      body: const Settings(),
       title: const Text('设置')),
 ];
 
@@ -43,16 +43,28 @@ class _PCHomePageState extends State<PCHomePage> {
             SizedBox(
               width: 50,
               height: 60,
+              child: MaximizeWindowButton(),
+            ),
+            SizedBox(
+              width: 50,
+              height: 60,
               child: CloseWindowButton(),
             ),
           ],
         ),
       ),
       pane: NavigationPane(
-        items: pages,
-        selected: selectedIndex,
-        onChanged: (index) => setState(() => selectedIndex = index),
-      ),
+          items: pages,
+          footerItems: [
+            PaneItemSeparator(),
+            PaneItem(
+                icon: const Icon(FluentIcons.info),
+                body: const About(),
+                title: const Text('关于')),
+          ],
+          selected: selectedIndex,
+          onChanged: (index) => setState(() => selectedIndex = index),
+          displayMode: PaneDisplayMode.compact),
     );
   }
 }

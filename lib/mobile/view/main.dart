@@ -11,8 +11,26 @@ class _MobileHomePageState extends State<MobileHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 180.0,
+            pinned: true,
+            flexibleSpace: const FlexibleSpaceBar(
+              titlePadding: EdgeInsets.only(left: 20, bottom: 15),
+              collapseMode: CollapseMode.parallax,
+              title: Text('ChatWhiz'),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  // Get.to(() => const Settings());
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

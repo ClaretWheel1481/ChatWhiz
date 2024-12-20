@@ -7,3 +7,11 @@
 
 # idea
 .idea/
+
+# vscode
+.vscode/
+
+# project
+.build/
+.flutter-plugins
+.flutter-plugins-dependencies

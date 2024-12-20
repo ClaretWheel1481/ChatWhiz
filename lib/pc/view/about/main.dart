@@ -1,17 +1,17 @@
 import 'package:chatwhiz/pc/import.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class About extends StatefulWidget {
+  const About({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<About> createState() => _AboutState();
 }
 
-class _HomeState extends State<Home> {
+class _AboutState extends State<About> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage.scrollable(children: const [
-      Text('主页'),
+      Text('关于'),
     ]);
   }
 }
