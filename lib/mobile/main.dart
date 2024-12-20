@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'import.dart';
 
 class MobileHomePage extends StatefulWidget {
   const MobileHomePage({super.key});
@@ -25,12 +25,17 @@ class _MobileHomePageState extends State<MobileHomePage> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () {
-                  // Get.to(() => const Settings());
+                  Get.to(() => const Settings());
                 },
               ),
             ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
       ),
     );
   }
