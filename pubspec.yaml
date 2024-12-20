@@ -12,12 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   get:
   get_storage:
   fluent_ui:
-  device_info_plus:
   dynamic_color:
+  bitsdojo_window:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

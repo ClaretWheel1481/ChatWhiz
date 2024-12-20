@@ -42,6 +42,16 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/bitsdojo_window_windows/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/dynamic_color/cmake_install.cmake")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
@@ -141,6 +151,49 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
     file(INSTALL DESTINATION "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Release" TYPE FILE FILES "E:/Coding/Flutter/chatwhiz/windows/flutter/ephemeral/flutter_windows.dll")
+  endif()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Debug/bitsdojo_window_windows_plugin.lib;E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Debug/dynamic_color_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Debug" TYPE FILE FILES
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/bitsdojo_window_windows/Debug/bitsdojo_window_windows_plugin.lib"
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/dynamic_color/Debug/dynamic_color_plugin.dll"
+      )
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Pp][Rr][Oo][Ff][Ii][Ll][Ee])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Profile/bitsdojo_window_windows_plugin.lib;E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Profile/dynamic_color_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Profile" TYPE FILE FILES
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/bitsdojo_window_windows/Profile/bitsdojo_window_windows_plugin.lib"
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/dynamic_color/Profile/dynamic_color_plugin.dll"
+      )
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Release/bitsdojo_window_windows_plugin.lib;E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Release/dynamic_color_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "E:/Coding/Flutter/chatwhiz/build/windows/x64/runner/Release" TYPE FILE FILES
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/bitsdojo_window_windows/Release/bitsdojo_window_windows_plugin.lib"
+      "E:/Coding/Flutter/chatwhiz/build/windows/x64/plugins/dynamic_color/Release/dynamic_color_plugin.dll"
+      )
   endif()
 endif()
 
