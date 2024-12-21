@@ -5,6 +5,8 @@ import 'import.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+
+  // 设置窗口参数（仅适用于桌面端）
   if (Platform.isWindows || Platform.isLinux) {
     doWhenWindowReady(() {
       appWindow.minSize = const Size(1080, 620);
@@ -12,76 +14,92 @@ void main() async {
       appWindow.show();
     });
   }
-  runApp(const MyApp());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final GetStorage box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
+    // 根据平台决定加载 PC 或移动端 UI
     if (Platform.isWindows || Platform.isLinux) {
-      return FluentApp(
-        theme: FluentThemeData(),
-        home: const PCHomePage(),
-      );
+      return _buildDesktopApp();
     } else {
-      // 读取主题模式和 Monet 状态
-      final GetStorage box = GetStorage();
-      final String themeMode = box.read('themeMode') ?? 'system';
-      final bool monetStatus = box.read('monetStatus') ?? true;
+      return _buildMobileApp();
+    }
+  }
 
-      // 如果 Monet 被禁用，使用默认配色
-      if (!monetStatus) {
-        final lightColorScheme =
+  /// 构建桌面端应用
+  Widget _buildDesktopApp() {
+    return FluentApp(
+      theme: FluentThemeData(
+        brightness: Brightness.light,
+        fontFamily: "微软雅黑",
+        accentColor: Colors.blue,
+      ),
+      darkTheme: FluentThemeData(
+        brightness: Brightness.dark,
+        fontFamily: "微软雅黑",
+        accentColor: Colors.blue,
+      ),
+      home: const PCHomePage(),
+    );
+  }
+
+  /// 构建移动端应用
+  Widget _buildMobileApp() {
+    final String themeMode = box.read('themeMode') ?? 'system';
+    final bool monetStatus = box.read('monetStatus') ?? true;
+
+    if (!monetStatus) {
+      // 如果Monet被禁用，使用默认配色
+      final lightColorScheme =
+          md.ColorScheme.fromSwatch(primarySwatch: md.Colors.blue);
+      final darkColorScheme = md.ColorScheme.fromSwatch(
+        primarySwatch: md.Colors.blue,
+        brightness: Brightness.dark,
+      );
+
+      return GetMaterialApp(
+        theme: md.ThemeData(colorScheme: lightColorScheme),
+        darkTheme: md.ThemeData(colorScheme: darkColorScheme),
+        themeMode: _getThemeMode(themeMode),
+        home: const MobileHomePage(),
+      );
+    }
+
+    return DynamicColorBuilder(
+      builder: (md.ColorScheme? lightDynamic, md.ColorScheme? darkDynamic) {
+        final lightColorScheme = lightDynamic?.harmonized() ??
             md.ColorScheme.fromSwatch(primarySwatch: md.Colors.blue);
-        final darkColorScheme = md.ColorScheme.fromSwatch(
-          primarySwatch: md.Colors.blue,
-          brightness: Brightness.dark,
-        );
+        final darkColorScheme = darkDynamic?.harmonized() ??
+            md.ColorScheme.fromSwatch(
+              primarySwatch: md.Colors.blue,
+              brightness: Brightness.dark,
+            );
 
         return GetMaterialApp(
           theme: md.ThemeData(colorScheme: lightColorScheme),
           darkTheme: md.ThemeData(colorScheme: darkColorScheme),
-          themeMode: themeMode == 'system'
-              ? ThemeMode.system
-              : themeMode == 'light'
-                  ? ThemeMode.light
-                  : ThemeMode.dark,
+          themeMode: _getThemeMode(themeMode),
           home: const MobileHomePage(),
         );
-      }
+      },
+    );
+  }
 
-      // 如果 Monet 被启用，使用动态取色
-      return DynamicColorBuilder(
-        builder: (md.ColorScheme? lightDynamic, md.ColorScheme? darkDynamic) {
-          md.ColorScheme lightColorScheme;
-          md.ColorScheme darkColorScheme;
-
-          if (lightDynamic != null && darkDynamic != null) {
-            lightColorScheme = lightDynamic.harmonized();
-            darkColorScheme = darkDynamic.harmonized();
-          } else {
-            lightColorScheme =
-                md.ColorScheme.fromSwatch(primarySwatch: md.Colors.blue);
-            darkColorScheme = md.ColorScheme.fromSwatch(
-              primarySwatch: md.Colors.blue,
-              brightness: Brightness.dark,
-            );
-          }
-
-          return GetMaterialApp(
-            theme: md.ThemeData(colorScheme: lightColorScheme),
-            darkTheme: md.ThemeData(colorScheme: darkColorScheme),
-            themeMode: themeMode == 'system'
-                ? ThemeMode.system
-                : themeMode == 'light'
-                    ? ThemeMode.light
-                    : ThemeMode.dark,
-            home: const MobileHomePage(),
-          );
-        },
-      );
+  /// 根据字符串返回 ThemeMode
+  ThemeMode _getThemeMode(String mode) {
+    switch (mode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
     }
   }
 }

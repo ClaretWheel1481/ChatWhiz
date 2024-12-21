@@ -16,7 +16,7 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    _themeMode = _box.read('themeMode') ?? 'system';
+    _themeMode = _box.read('pcThemeMode') ?? 'system';
     selectedCollect = _box.read('deviceCollect') ?? true;
     selectedMonet = _box.read('monetStatus') ?? true;
   }
@@ -25,7 +25,7 @@ class _SettingsState extends State<Settings> {
     setState(() {
       _themeMode = themeMode;
     });
-    _box.write('themeMode', themeMode);
+    _box.write('pcThemeMode', themeMode);
     Get.changeThemeMode(
       themeMode == 'system'
           ? ThemeMode.system
@@ -40,7 +40,6 @@ class _SettingsState extends State<Settings> {
     setState(() {
       selectedCollect = value;
     });
-    AppConstants.deviceInfoCollect = value;
     _box.write('deviceCollect', value);
   }
 
@@ -49,7 +48,6 @@ class _SettingsState extends State<Settings> {
     setState(() {
       selectedMonet = value;
     });
-    AppConstants.monetColor = value;
     _box.write('monetStatus', value);
   }
 

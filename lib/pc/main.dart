@@ -54,6 +54,7 @@ class _PCHomePageState extends State<PCHomePage> {
         ),
       ),
       pane: NavigationPane(
+          size: const NavigationPaneSize(openMaxWidth: 200),
           items: pages,
           footerItems: [
             PaneItemSeparator(),

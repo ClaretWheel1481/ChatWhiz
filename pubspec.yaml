@@ -17,6 +17,7 @@ dependencies:
   fluent_ui:
   dynamic_color:
   bitsdojo_window:
+  url_launcher:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
