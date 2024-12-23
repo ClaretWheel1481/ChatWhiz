@@ -24,80 +24,90 @@ class _AIChatState extends State<AIChat> {
 
   @override
   Widget build(BuildContext context) {
-    return ContentDialog(
-      constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.9,
-          maxHeight: MediaQuery.of(context).size.height),
-      title: Row(
-        children: [
-          IconButton(
-              style: const ButtonStyle(
-                  iconSize: WidgetStatePropertyAll(22.0),
-                  padding: WidgetStatePropertyAll(EdgeInsets.only(right: 10))),
-              icon: const Icon(FluentIcons.back),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          Text(
-            "对话",
-            style: FluentTheme.of(context)
-                .typography
-                .title
-                ?.copyWith(fontSize: 38),
-          ),
-        ],
-      ),
-      content: Column(
-        children: [
-          Row(
+    return Stack(
+      children: [
+        ContentDialog(
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.9,
+              maxHeight: MediaQuery.of(context).size.height),
+          title: Row(
             children: [
-              const Text("选择对话模型："),
-              ComboBox<String>(
-                value: selectedModel,
-                items: AppConstants.models.map((e) {
-                  return ComboBoxItem(
-                    value: e,
-                    child: Text(e),
-                  );
-                }).toList(),
-                onChanged: (color) => setState(() => selectedModel = color),
+              IconButton(
+                  style: const ButtonStyle(
+                      iconSize: WidgetStatePropertyAll(22.0),
+                      padding:
+                          WidgetStatePropertyAll(EdgeInsets.only(right: 10))),
+                  icon: const Icon(FluentIcons.back),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              Text(
+                "对话",
+                style: FluentTheme.of(context)
+                    .typography
+                    .title
+                    ?.copyWith(fontSize: 38),
               ),
             ],
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _messages[index],
+          content: Column(
+            children: [
+              Row(
+                children: [
+                  const Text("选择对话模型 "),
+                  ComboBox<String>(
+                    value: selectedModel,
+                    items: AppConstants.models.map((e) {
+                      return ComboBoxItem(
+                        value: e,
+                        child: Text(e),
+                      );
+                    }).toList(),
+                    onChanged: (color) => setState(() => selectedModel = color),
                   ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextBox(
-                    controller: _controller,
-                    placeholder: '输入内容...',
-                    maxLines: 5,
-                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        _messages[index],
+                      ),
+                    );
+                  },
                 ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: _sendMessage,
-                  child: const Text('发送'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextBox(
+                        controller: _controller,
+                        placeholder: '输入内容...',
+                        maxLines: 5,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      onPressed: _sendMessage,
+                      child: const Text('发送'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        SizedBox(
+          height: 42,
+          width: MediaQuery.of(context).size.width,
+          child: MoveWindow(),
+        )
+      ],
     );
   }
 }
