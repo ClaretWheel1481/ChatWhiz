@@ -1,24 +1,28 @@
 import 'package:chatwhiz/desktop/import.dart';
 
-List<NavigationPaneItem> pages = [
+List<NavigationPaneItem> routers = [
   PaneItem(
       icon: const Icon(FluentIcons.home),
       body: const Home(),
       title: const Text('主页')),
+  PaneItem(
+      icon: const Icon(FluentIcons.chat),
+      body: const Chat(),
+      title: const Text('对话')),
   PaneItem(
       icon: const Icon(FluentIcons.settings),
       body: const Settings(),
       title: const Text('设置')),
 ];
 
-class PCHomePage extends StatefulWidget {
-  const PCHomePage({super.key});
+class DesktopHomePage extends StatefulWidget {
+  const DesktopHomePage({super.key});
 
   @override
-  State<PCHomePage> createState() => _PCHomePageState();
+  State<DesktopHomePage> createState() => _DesktopHomePageState();
 }
 
-class _PCHomePageState extends State<PCHomePage> {
+class _DesktopHomePageState extends State<DesktopHomePage> {
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -55,7 +59,7 @@ class _PCHomePageState extends State<PCHomePage> {
       ),
       pane: NavigationPane(
           size: const NavigationPaneSize(openMaxWidth: 200),
-          items: pages,
+          items: routers,
           footerItems: [
             PaneItemSeparator(),
             PaneItem(

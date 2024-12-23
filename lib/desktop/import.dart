@@ -5,3 +5,4 @@ export 'package:chatwhiz/desktop/view/settings/main.dart';
 export 'package:chatwhiz/desktop/view/about/main.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:chatwhiz/constants/app.dart';
+export 'package:chatwhiz/desktop/view/chat/chat.dart';

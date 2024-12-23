@@ -18,6 +18,7 @@ dependencies:
   dynamic_color:
   bitsdojo_window:
   url_launcher:
+  device_info_plus:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

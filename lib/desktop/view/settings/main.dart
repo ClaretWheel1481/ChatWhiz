@@ -11,14 +11,27 @@ class _SettingsState extends State<Settings> {
   final GetStorage _box = GetStorage();
   bool selectedCollect = true;
   bool selectedAutoCheckUpdate = true;
+  bool selectedProxy = false;
+  int selectedProxyType = 0;
 
   @override
   void initState() {
     super.initState();
     selectedCollect = _box.read('deviceCollect') ?? true;
     selectedAutoCheckUpdate = _box.read('autoCheckUpdate') ?? true;
+    selectedProxy = _box.read('proxy') ?? false;
   }
 
+  // 代理设置
+  void onProxy(bool? value) {
+    if (value == null) return;
+    setState(() {
+      selectedProxy = value;
+      _box.write('proxy', value);
+    });
+  }
+
+  // 设备信息收集设置
   void onInfoCollect(bool? value) {
     if (value == null) return;
     setState(() {
@@ -27,6 +40,7 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  // 自动检查更新设置
   void onAutoCheckUpdate(bool? value) {
     if (value == null) return;
     setState(() {
@@ -35,6 +49,7 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  // 自动检查更新关闭对话框
   void showAutoCheckUpdateDialog(BuildContext context) async {
     await showDialog<void>(
       context: context,
@@ -86,7 +101,7 @@ class _SettingsState extends State<Settings> {
           children: [
             const InfoBar(
               title: Text('提示'),
-              content: Text('仅收集设备相关信息用于统计，不会收集您的对话内容。'),
+              content: Text('启动时，将会收集一次您的设备及系统信息，仅用于统计，不会收集您的对话内容。'),
               severity: InfoBarSeverity.info,
               isLong: true,
             ),
@@ -110,6 +125,30 @@ class _SettingsState extends State<Settings> {
                 }
               },
             ),
+            const SizedBox(height: 10),
+            Checkbox(
+              content: const Text("启用代理设置"),
+              checked: selectedProxy,
+              onChanged: (v) {
+                onProxy(v);
+              },
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: List.generate(2, (index) {
+                return RadioButton(
+                    content:
+                        index == 0 ? const Text("Http") : const Text("Socks5"),
+                    checked: selectedProxyType == index,
+                    onChanged: selectedProxy
+                        ? (checked) {
+                            if (checked) {
+                              setState(() => selectedProxyType = index);
+                            }
+                          }
+                        : null);
+              }),
+            )
           ],
         ),
       ],

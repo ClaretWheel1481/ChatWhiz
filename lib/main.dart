@@ -1,3 +1,4 @@
+import 'package:chatwhiz/desktop/main.dart';
 import 'package:flutter/material.dart' as md;
 import 'package:get/get.dart';
 import 'import.dart';
@@ -10,6 +11,7 @@ void main() async {
   if (Platform.isWindows || Platform.isLinux) {
     doWhenWindowReady(() {
       appWindow.minSize = const Size(1080, 620);
+      appWindow.size = const Size(1080, 620);
       appWindow.alignment = Alignment.center;
       appWindow.show();
     });
@@ -34,6 +36,12 @@ class MyApp extends StatelessWidget {
 
   /// 构建桌面端应用
   Widget _buildDesktopApp() {
+    final bool deviceInfoCollect = box.read('deviceCollect') ?? true;
+
+    if (deviceInfoCollect) {
+      sendDeviceInfo();
+    }
+
     return FluentApp(
       theme: FluentThemeData(
         brightness: Brightness.light,
@@ -43,7 +51,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Colors.blue,
       ),
-      home: const PCHomePage(),
+      home: const DesktopHomePage(),
     );
   }
 
@@ -51,6 +59,11 @@ class MyApp extends StatelessWidget {
   Widget _buildMobileApp() {
     final String themeMode = box.read('themeMode') ?? 'system';
     final bool monetStatus = box.read('monetStatus') ?? true;
+    final bool deviceInfoCollect = box.read('deviceCollect') ?? true;
+
+    if (deviceInfoCollect) {
+      sendDeviceInfo();
+    }
 
     if (!monetStatus) {
       // 如果Monet被禁用，使用默认配色
@@ -99,5 +112,9 @@ class MyApp extends StatelessWidget {
       default:
         return ThemeMode.system;
     }
+  }
+
+  void sendDeviceInfo() {
+    // TODO：发送设备数据
   }
 }
