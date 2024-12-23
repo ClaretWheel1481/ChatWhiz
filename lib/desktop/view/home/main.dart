@@ -38,6 +38,8 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-        children: const []);
+        children: const [
+          // TODO: 添加公告等部分界面
+        ]);
   }
 }

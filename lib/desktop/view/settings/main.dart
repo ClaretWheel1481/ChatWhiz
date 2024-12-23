@@ -9,6 +9,9 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final GetStorage _box = GetStorage();
+  final TextEditingController ipCtr = TextEditingController();
+  final TextEditingController portCtr = TextEditingController();
+
   bool selectedCollect = true;
   bool selectedAutoCheckUpdate = true;
   bool selectedProxy = false;
@@ -20,6 +23,48 @@ class _SettingsState extends State<Settings> {
     selectedCollect = _box.read('deviceCollect') ?? true;
     selectedAutoCheckUpdate = _box.read('autoCheckUpdate') ?? true;
     selectedProxy = _box.read('proxy') ?? false;
+
+    // 加载代理设置
+    var proxyData = _box.read('proxySettings');
+    if (proxyData != null) {
+      var proxySettings = ProxySettings.fromMap(proxyData);
+      ipCtr.text = proxySettings.ip;
+      portCtr.text = proxySettings.port.toString();
+      selectedProxyType = proxySettings.protocol == 'Http' ? 0 : 1;
+    }
+  }
+
+  // 保存代理设置
+  void saveProxySettings() {
+    if (!selectedProxy) return;
+
+    var proxySettings = ProxySettings(
+      protocol: selectedProxyType == 0 ? 'Http' : 'Socks5',
+      ip: ipCtr.text,
+      port: int.tryParse(portCtr.text) ?? 0,
+    );
+
+    // 保存到 GetStorage
+    _box.write('proxySettings', proxySettings.toMap());
+    showProxySaved(context);
+  }
+
+  // 保存代理设置对话框
+  void showProxySaved(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('保存成功'),
+        actions: [
+          FilledButton(
+            child: const Text('好'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   // 代理设置
@@ -143,11 +188,42 @@ class _SettingsState extends State<Settings> {
                     onChanged: selectedProxy
                         ? (checked) {
                             if (checked) {
-                              setState(() => selectedProxyType = index);
+                              setState(() {
+                                selectedProxyType = index;
+                              });
                             }
                           }
                         : null);
               }),
+            ),
+            const SizedBox(height: 10),
+            InfoLabel(
+              label: '代理服务器:',
+              child: TextBox(
+                controller: ipCtr,
+                placeholder: '127.0.0.1',
+                expands: false,
+                enabled: selectedProxy,
+              ),
+            ),
+            const SizedBox(height: 10),
+            InfoLabel(
+              label: '服务器端口:',
+              child: TextBox(
+                controller: portCtr,
+                placeholder: '7890',
+                expands: false,
+                enabled: selectedProxy,
+              ),
+            ),
+            const SizedBox(height: 10),
+            FilledButton(
+              onPressed: selectedProxy
+                  ? () {
+                      saveProxySettings();
+                    }
+                  : null,
+              child: const Text("保存并应用"),
             )
           ],
         ),

@@ -40,7 +40,6 @@ class _ChatState extends State<Chat> {
               HyperlinkButton(
                 child: const Text("新增对话"),
                 onPressed: () {
-                  // 添加新的对话逻辑
                   showDialog(
                       context: context, builder: (context) => const AIChat());
                 },
