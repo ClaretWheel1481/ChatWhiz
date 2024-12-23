@@ -37,12 +37,10 @@ class MyApp extends StatelessWidget {
     return FluentApp(
       theme: FluentThemeData(
         brightness: Brightness.light,
-        fontFamily: "微软雅黑",
         accentColor: Colors.blue,
       ),
       darkTheme: FluentThemeData(
         brightness: Brightness.dark,
-        fontFamily: "微软雅黑",
         accentColor: Colors.blue,
       ),
       home: const PCHomePage(),

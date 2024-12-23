@@ -1,5 +1,5 @@
 import 'package:chatwhiz/constants/app.dart';
-import 'package:chatwhiz/pc/import.dart';
+import 'package:chatwhiz/desktop/import.dart';
 
 class About extends StatefulWidget {
   const About({super.key});
