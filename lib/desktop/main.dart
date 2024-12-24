@@ -1,10 +1,15 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/view/apikey/main.dart';
 
 List<NavigationPaneItem> routers = [
   PaneItem(
       icon: const Icon(FluentIcons.home),
       body: const Home(),
       title: const Text('主页')),
+  PaneItem(
+      icon: const Icon(FluentIcons.azure_key_vault),
+      body: const Apikey(),
+      title: const Text('API Key')),
   PaneItem(
       icon: const Icon(FluentIcons.chat),
       body: const Chat(),

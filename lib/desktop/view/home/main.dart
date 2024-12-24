@@ -39,7 +39,20 @@ class _HomeState extends State<Home> {
           ),
         ),
         children: const [
+          SizedBox(height: 30),
           // TODO: 添加公告等部分界面
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InfoBar(
+                title: Text('提示'),
+                content: Text('第一次启动？记得先输入相关API Key！'),
+                severity: InfoBarSeverity.info,
+                isLong: true,
+              ),
+            ],
+          )
         ]);
   }
 }
