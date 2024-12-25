@@ -11,7 +11,7 @@ class _AIChatState extends State<AIChat> {
   final GetStorage _box = GetStorage();
   final TextEditingController _controller = TextEditingController();
   final List<String> _messages = [];
-  String? selectedModel = 'Qwen';
+  String selectedModel = '';
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
@@ -54,7 +54,6 @@ class _AIChatState extends State<AIChat> {
             children: [
               Row(
                 children: [
-                  const Text("选择对话模型 "),
                   ComboBox<String>(
                     value: selectedModel,
                     items: AppConstants.models.map((e) {
@@ -63,10 +62,13 @@ class _AIChatState extends State<AIChat> {
                         child: Text(e),
                       );
                     }).toList(),
-                    onChanged: (color) => setState(() => selectedModel = color),
+                    onChanged: (model) =>
+                        setState(() => selectedModel = model!),
+                    placeholder: const Text("选择对话模型"),
                   ),
                 ],
               ),
+              // TODO: 优化对话内容样式
               Expanded(
                 child: ListView.builder(
                   itemCount: _messages.length,
@@ -86,14 +88,19 @@ class _AIChatState extends State<AIChat> {
                   children: [
                     Expanded(
                       child: TextBox(
+                        enabled: selectedModel.isNotEmpty ? true : false,
                         controller: _controller,
                         placeholder: '输入内容...',
                         maxLines: 5,
+                        style: const TextStyle(fontSize: 16),
+                        onChanged: (v) {
+                          setState(() {});
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
-                      onPressed: _sendMessage,
+                      onPressed: _controller.text.isEmpty ? null : _sendMessage,
                       child: const Text('发送'),
                     ),
                   ],

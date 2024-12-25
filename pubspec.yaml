@@ -19,6 +19,7 @@ dependencies:
   bitsdojo_window:
   url_launcher:
   device_info_plus:
+  dio:
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

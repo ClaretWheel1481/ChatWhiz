@@ -36,7 +36,6 @@ class _ChatState extends State<Chat> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text("无对话"),
-              const SizedBox(height: 20),
               HyperlinkButton(
                 child: const Text("新增对话"),
                 onPressed: () {

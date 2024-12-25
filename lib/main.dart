@@ -8,7 +8,7 @@ void main() async {
   await GetStorage.init();
 
   // 设置窗口参数（仅适用于桌面端）
-  if (Platform.isWindows || Platform.isLinux) {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     doWhenWindowReady(() {
       appWindow.minSize = const Size(1080, 620);
       appWindow.size = const Size(1080, 620);
@@ -26,8 +26,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 根据平台决定加载 PC 或移动端 UI
-    if (Platform.isWindows || Platform.isLinux) {
+    // 根据平台决定加载 桌面端 或 移动端 UI
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       return _buildDesktopApp();
     } else {
       return _buildMobileApp();
@@ -114,7 +114,19 @@ class MyApp extends StatelessWidget {
     }
   }
 
-  void sendDeviceInfo() {
+  void sendDeviceInfo() async {
     // TODO：发送设备数据
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    if (Platform.isWindows) {
+      WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
+    } else if (Platform.isLinux) {
+      LinuxDeviceInfo linuxDeviceInfo = await deviceInfo.linuxInfo;
+    } else if (Platform.isAndroid) {
+      AndroidDeviceInfo androidBuildVersion = await deviceInfo.androidInfo;
+    } else if (Platform.isMacOS) {
+      MacOsDeviceInfo macOsDeviceInfo = await deviceInfo.macOsInfo;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
+    }
   }
 }
