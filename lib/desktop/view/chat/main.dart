@@ -40,7 +40,10 @@ class _ChatState extends State<Chat> {
                 child: const Text("新增对话"),
                 onPressed: () {
                   showDialog(
-                      context: context, builder: (context) => const AIChat());
+                      context: context,
+                      builder: (context) => AIChat(
+                            isNew: true,
+                          ));
                 },
               ),
             ],

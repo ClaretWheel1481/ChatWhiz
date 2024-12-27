@@ -1,7 +1,9 @@
 import 'package:chatwhiz/desktop/import.dart';
 
 class AIChat extends StatefulWidget {
-  const AIChat({Key? key}) : super(key: key);
+  bool? isNew;
+
+  AIChat({Key? key, required this.isNew}) : super(key: key);
 
   @override
   State<AIChat> createState() => _AIChatState();
@@ -9,6 +11,7 @@ class AIChat extends StatefulWidget {
 
 class _AIChatState extends State<AIChat> {
   final GetStorage _box = GetStorage();
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
   final List<String> _messages = [];
   String selectedModel = '';
@@ -16,10 +19,41 @@ class _AIChatState extends State<AIChat> {
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       setState(() {
+        widget.isNew = false;
         _messages.add(_controller.text);
+        // TODO: 等待模型回复后保存一次对话内容
+        _scrollToBottom();
         _controller.clear();
       });
+    } else {
+      showCheckDialog(context);
     }
+  }
+
+  // 空对话框
+  void showCheckDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('内容为空'),
+        actions: [
+          Button(
+            child: const Text('是'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -62,8 +96,9 @@ class _AIChatState extends State<AIChat> {
                         child: Text(e),
                       );
                     }).toList(),
-                    onChanged: (model) =>
-                        setState(() => selectedModel = model!),
+                    onChanged: widget.isNew!
+                        ? (model) => setState(() => selectedModel = model!)
+                        : null,
                     placeholder: const Text("选择对话模型"),
                   ),
                 ],
@@ -71,6 +106,7 @@ class _AIChatState extends State<AIChat> {
               // TODO: 优化对话内容样式
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
                     return Padding(
@@ -93,9 +129,6 @@ class _AIChatState extends State<AIChat> {
                         placeholder: '输入内容...',
                         maxLines: 5,
                         style: const TextStyle(fontSize: 16),
-                        onChanged: (v) {
-                          setState(() {});
-                        },
                       ),
                     ),
                     const SizedBox(width: 8),

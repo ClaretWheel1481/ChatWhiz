@@ -106,7 +106,7 @@ class _ApikeyState extends State<Apikey> {
               HyperlinkButton(
                   onPressed: () async {
                     await launchUrl(Uri.parse(
-                        'https://bigmodel.cn/usercenter/proj-mgmt/apikeys'));
+                        'https://bigmodel.cn/dev/api/http-call/http-auth'));
                   },
                   child: const Text("如何获取？"))
             ],
