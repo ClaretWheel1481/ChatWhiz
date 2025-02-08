@@ -1,5 +1,6 @@
 export 'package:url_launcher/url_launcher.dart';
 export 'package:bitsdojo_window/bitsdojo_window.dart';
+export 'package:dio/dio.dart';
 export 'package:chatwhiz/desktop/view/settings/main.dart';
 export 'package:chatwhiz/desktop/view/about/main.dart';
 export 'package:chatwhiz/desktop/view/home/main.dart';

@@ -23,6 +23,7 @@ class _AIChatState extends State<AIChat> {
 
   List<Map<String, String>> _messages = [];
   String selectedModel = '';
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -31,12 +32,18 @@ class _AIChatState extends State<AIChat> {
       _messages = List<Map<String, String>>.from(widget.existingMessages!);
       selectedModel = widget.choosenModel!;
     }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
+      Future.delayed(const Duration(milliseconds: 50), () {
+        _scrollToBottom();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _scrollToBottom();
+        });
+      });
     });
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       setState(() {
         _messages.add({"role": "user", "content": _controller.text});
@@ -54,14 +61,26 @@ class _AIChatState extends State<AIChat> {
 
         // 清空输入框
         _controller.clear();
-
-        // 获取API地址
-        String apiUrl = AppConstants.getAPI(selectedModel);
-        if (apiUrl.isNotEmpty) {
-          _fetchAIResponse(apiUrl);
-        } else {
-          print("未找到对应的 API 地址！");
-        }
+      });
+      isLoading = true;
+      // 获取API地址
+      String apiUrl = AppConstants.getAPI(selectedModel);
+      if (apiUrl.isNotEmpty) {
+        await _fetchAIResponse(apiUrl);
+      } else {
+        print("未找到对应的 API 地址！");
+      }
+      setState(() {
+        // 滚动到底部
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 50), () {
+            _scrollToBottom();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              _scrollToBottom();
+            });
+          });
+        });
+        isLoading = false;
       });
     } else {
       showCheckDialog(context);
@@ -94,9 +113,27 @@ class _AIChatState extends State<AIChat> {
     _box.write('chats', storedChats);
   }
 
-  // TODO: 实现请求模型API
-  void _fetchAIResponse(String apiUrl) {
+  // TODO: 实现请求模型API(需要做额外适配)（代理功能）
+  Future<void> _fetchAIResponse(String apiUrl) async {
     print("调用 API: $apiUrl");
+    try {
+      final data = {"model": selectedModel, "messages": _messages};
+      Response resp = await Dio().post(apiUrl,
+          data: data,
+          options: Options(headers: {
+            'Authorization': 'Bearer ${_box.read('ZhipuKey')}',
+            'Content-Type': 'application/json',
+          }));
+      print(resp);
+      print(resp.data['choices'][0]['message']);
+      _messages.add({
+        'content': resp.data['choices'][0]['message']['content'],
+        'role': resp.data['choices'][0]['message']['role'],
+      });
+      _saveChatToStorage();
+    } catch (e) {
+      print("Error:$e");
+    }
   }
 
   // 空对话框
@@ -119,11 +156,15 @@ class _AIChatState extends State<AIChat> {
 
   // 滑动至最底部
   void _scrollToBottom() {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
@@ -146,7 +187,7 @@ class _AIChatState extends State<AIChat> {
                     Navigator.pop(context);
                   }),
               Text(
-                widget.isNew ? "新对话" : "历史对话",
+                widget.isNew ? "新对话" : "对话",
                 style: FluentTheme.of(context)
                     .typography
                     .title
@@ -173,6 +214,7 @@ class _AIChatState extends State<AIChat> {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -190,7 +232,9 @@ class _AIChatState extends State<AIChat> {
                         margin: const EdgeInsets.symmetric(
                             vertical: 4, horizontal: 10),
                         decoration: BoxDecoration(
-                          color: isUser ? Colors.blue : Colors.grey,
+                          color: isUser
+                              ? const Color.fromARGB(255, 27, 154, 255)
+                              : Colors.purple,
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(15),
                             topRight: const Radius.circular(15),
@@ -205,10 +249,10 @@ class _AIChatState extends State<AIChat> {
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.7,
                         ),
-                        child: Text(
+                        child: SelectableText(
                           message["content"] ?? "",
-                          style: TextStyle(
-                            color: isUser ? Colors.white : Colors.black,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontSize: 16,
                           ),
                         ),
@@ -217,66 +261,76 @@ class _AIChatState extends State<AIChat> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    IconButton(
-                        icon: const Icon(FluentIcons.add), onPressed: () {}),
-                    const SizedBox(
-                      width: 5,
+              const SizedBox(height: 18),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                            icon: const Icon(FluentIcons.add),
+                            onPressed: () {}),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        // TODO: 限制为部分模型使用
+                        const Button(
+                          onPressed: null,
+                          child: Text('推理'),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        // TODO: 限制为部分模型使用
+                        const Button(
+                          onPressed: null,
+                          child: Text('联网搜索'),
+                        ),
+                      ],
                     ),
-                    // TODO: 限制为部分模型使用
-                    const Button(
-                      onPressed: null,
-                      child: Text('推理'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: Focus(
+                          onKeyEvent: (node, event) {
+                            if (event is KeyDownEvent &&
+                                event.logicalKey == LogicalKeyboardKey.enter) {
+                              if (HardwareKeyboard.instance.isShiftPressed) {
+                                // Shift + Enter换行
+                              } else {
+                                // 回车发送消息
+                                _sendMessage();
+                                return KeyEventResult.handled;
+                              }
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: TextBox(
+                            enabled: selectedModel.isNotEmpty,
+                            controller: _controller,
+                            placeholder: '输入内容...',
+                            maxLines: 5,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        )),
+                        const SizedBox(width: 8),
+                        isLoading
+                            ? const ProgressRing()
+                            : FilledButton(
+                                onPressed: selectedModel.isNotEmpty
+                                    ? _sendMessage
+                                    : null,
+                                child: const Text('发送'),
+                              ),
+                      ],
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    // TODO: 限制为部分模型使用
-                    const Button(
-                      onPressed: null,
-                      child: Text('联网搜索'),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: Focus(
-                      onKeyEvent: (node, event) {
-                        if (event is KeyDownEvent &&
-                            event.logicalKey == LogicalKeyboardKey.enter) {
-                          if (HardwareKeyboard.instance.isShiftPressed) {
-                            // Shift + Enter换行
-                          } else {
-                            // 回车发送消息
-                            _sendMessage();
-                            return KeyEventResult.handled;
-                          }
-                        }
-                        return KeyEventResult.ignored;
-                      },
-                      child: TextBox(
-                        enabled: selectedModel.isNotEmpty,
-                        controller: _controller,
-                        placeholder: '输入内容...',
-                        maxLines: 5,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    )),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                      onPressed: selectedModel.isNotEmpty ? _sendMessage : null,
-                      child: const Text('发送'),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                ],
+              )
             ],
           ),
         ),

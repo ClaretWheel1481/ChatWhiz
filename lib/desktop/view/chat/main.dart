@@ -25,6 +25,34 @@ class _ChatState extends State<Chat> {
     });
   }
 
+  // 确认删除关闭对话框
+  void showDeleteDialog(BuildContext context, int index) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('你确定删除吗？'),
+        content: const Text(
+          '删除后，该对话内容将无法恢复。',
+        ),
+        actions: [
+          Button(
+            child: const Text('是'),
+            onPressed: () {
+              _deleteChat(index);
+              Navigator.pop(context);
+            },
+          ),
+          FilledButton(
+            child: const Text('否'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   // 删除对话
   void _deleteChat(int index) {
     List<dynamic> storedChats = _box.read<List>('chats') ?? [];
@@ -75,7 +103,7 @@ class _ChatState extends State<Chat> {
                 itemBuilder: (context, index) {
                   final chat = chatsList[index];
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.only(left: 5, top: 12, right: 5),
                     child: Column(
                       children: [
                         ListTile(
@@ -102,7 +130,7 @@ class _ChatState extends State<Chat> {
                             icon: const Icon(FluentIcons.delete),
                             onPressed: () {
                               // 删除对话
-                              _deleteChat(index);
+                              showDeleteDialog(context, index);
                             },
                           ),
                         ),

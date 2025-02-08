@@ -81,9 +81,9 @@ class _ApikeyState extends State<Apikey> {
                   child: const Text("如何获取？"))
             ],
           ),
-          TextBox(
+          PasswordBox(
             controller: DSKey,
-            expands: false,
+            revealMode: PasswordRevealMode.peek,
           ),
           const SizedBox(height: 10),
           Row(
@@ -98,9 +98,9 @@ class _ApikeyState extends State<Apikey> {
                   child: const Text("如何获取？"))
             ],
           ),
-          TextBox(
+          PasswordBox(
             controller: QwenKey,
-            expands: false,
+            revealMode: PasswordRevealMode.peek,
           ),
           const SizedBox(height: 10),
           Row(
@@ -115,9 +115,9 @@ class _ApikeyState extends State<Apikey> {
                   child: const Text("如何获取？"))
             ],
           ),
-          TextBox(
+          PasswordBox(
             controller: OpenAIKey,
-            expands: false,
+            revealMode: PasswordRevealMode.peek,
           ),
           const SizedBox(height: 10),
           Row(
@@ -132,9 +132,9 @@ class _ApikeyState extends State<Apikey> {
                   child: const Text("如何获取？"))
             ],
           ),
-          TextBox(
+          PasswordBox(
             controller: ZhipuKey,
-            expands: false,
+            revealMode: PasswordRevealMode.peek,
           ),
           const SizedBox(height: 10),
           Row(
