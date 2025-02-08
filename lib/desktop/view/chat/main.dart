@@ -9,10 +9,29 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final GetStorage _box = GetStorage();
+  List<Map<String, dynamic>> chatsList = [];
 
-  // 保存对话列表
-  // TODO: 用List显示，标题以用户发起的第一个问题，副标题为选择的对话模型
-  List<String> chatsList = [];
+  @override
+  void initState() {
+    super.initState();
+    _loadChats();
+  }
+
+  // 加载对话
+  void _loadChats() {
+    List<dynamic> storedChats = _box.read<List>('chats') ?? [];
+    setState(() {
+      chatsList = List<Map<String, dynamic>>.from(storedChats);
+    });
+  }
+
+  // 删除对话
+  void _deleteChat(int index) {
+    List<dynamic> storedChats = _box.read<List>('chats') ?? [];
+    storedChats.removeAt(index); // 删除对应对话
+    _box.write('chats', storedChats); // 更新存储
+    _loadChats(); // 刷新列表
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +49,92 @@ class _ChatState extends State<Chat> {
             ),
           ),
         ),
-        content: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text("无对话"),
-              HyperlinkButton(
-                child: const Text("新增对话"),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AIChat(
-                            isNew: true,
-                          ));
+        content: chatsList.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text("无对话"),
+                    HyperlinkButton(
+                      child: const Text("新增对话"),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AIChat(isNew: true),
+                        ).then((_) {
+                          _loadChats();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                itemCount: chatsList.length,
+                itemBuilder: (context, index) {
+                  final chat = chatsList[index];
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            chat["title"] ?? "未知标题",
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text("模型：${chat["subtitle"] ?? '未知模型'}",
+                              style: const TextStyle(fontSize: 14)),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AIChat(
+                                isNew: false,
+                                choosenModel: chat["subtitle"],
+                                existingMessages: chat["messages"],
+                              ),
+                            ).then((_) {
+                              _loadChats(); // 刷新列表
+                            });
+                          },
+                          trailing: IconButton(
+                            icon: const Icon(FluentIcons.delete),
+                            onPressed: () {
+                              // 删除对话
+                              _deleteChat(index);
+                            },
+                          ),
+                        ),
+                        const Divider()
+                      ],
+                    ),
+                  );
                 },
               ),
-            ],
-          ),
-        ));
+        bottomBar: chatsList.isNotEmpty
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        child: FilledButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AIChat(isNew: true),
+                            ).then((_) {
+                              _loadChats();
+                            });
+                          },
+                          child: const Icon(FluentIcons.add),
+                        ),
+                      ))
+                ],
+              )
+            : null);
   }
 }

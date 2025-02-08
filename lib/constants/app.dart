@@ -2,22 +2,35 @@ class AppConstants {
   // 应用版本
   static String appVersion = '1.0.0';
 
-  // 设备信息收集API
-  static String privacyAPI = 'https://privacy.claret.space/api';
+  // DeepSeek 模型
+  static List<String> dsModels = ['deepseek-chat', 'deepseek-reasoner'];
 
-  // 可用模型
-  static List<String> models = [
-    'deepseek-chat',
-    'deepseek-reasoner',
+  // Qwen (千问) 模型
+  static List<String> qwenModels = [
     'qwen-max',
     'qwen-plus',
     'qwen-turbo',
-    'qwen-long',
-    'GPT-4o',
-    'GPT-4o mini',
-    'GLM-4-Air',
-    'GLM-4-Plus',
+    'qwen-long'
   ];
+
+  // OpenAI 模型
+  static List<String> openAIModels = ['GPT-4o', 'GPT-4o mini'];
+
+  // 智谱 (GLM) 模型
+  static List<String> zhipuModels = ['GLM-4-Air', 'GLM-4-Plus'];
+
+  // 统一获取所有模型
+  static List<String> get models =>
+      dsModels + qwenModels + openAIModels + zhipuModels;
+
+  // 根据模型名称获取 API 地址
+  static String getAPI(String model) {
+    if (dsModels.contains(model)) return DSAPI;
+    if (qwenModels.contains(model)) return QwenAPI;
+    if (openAIModels.contains(model)) return OpenAIAPI;
+    if (zhipuModels.contains(model)) return ZhipuAPI;
+    return '';
+  }
 
   // 千问 API
   static String QwenAPI =

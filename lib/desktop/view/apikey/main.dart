@@ -12,12 +12,15 @@ class _ApikeyState extends State<Apikey> {
   final TextEditingController QwenKey = TextEditingController();
   final TextEditingController OpenAIKey = TextEditingController();
   final TextEditingController ZhipuKey = TextEditingController();
+  final TextEditingController DSKey = TextEditingController();
 
   @override
   void initState() {
     QwenKey.text = _box.read('QwenKey') ?? '';
     OpenAIKey.text = _box.read('OpenAIKey') ?? '';
     ZhipuKey.text = _box.read('ZhipuKey') ?? '';
+    DSKey.text = _box.read('DSKey') ?? '';
+
     super.initState();
   }
 
@@ -26,6 +29,7 @@ class _ApikeyState extends State<Apikey> {
     _box.write('QwenKey', QwenKey.text);
     _box.write('OpenAIKey', OpenAIKey.text);
     _box.write('ZhipuKey', ZhipuKey.text);
+    _box.write('DSKey', DSKey.text);
     showSaved(context);
   }
 
@@ -67,6 +71,23 @@ class _ApikeyState extends State<Apikey> {
           const SizedBox(height: 20),
           Row(
             children: [
+              const Text('Deepseek API Key'),
+              const SizedBox(width: 10),
+              HyperlinkButton(
+                  onPressed: () async {
+                    await launchUrl(
+                        Uri.parse('https://platform.deepseek.com/sign_in'));
+                  },
+                  child: const Text("如何获取？"))
+            ],
+          ),
+          TextBox(
+            controller: DSKey,
+            expands: false,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
               const Text('千问API Key'),
               const SizedBox(width: 10),
               HyperlinkButton(
@@ -84,7 +105,7 @@ class _ApikeyState extends State<Apikey> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text('OpenAIAPI Key'),
+              const Text('OpenAI API Key'),
               const SizedBox(width: 10),
               HyperlinkButton(
                   onPressed: () async {
