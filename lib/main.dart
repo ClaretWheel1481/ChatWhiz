@@ -36,12 +36,6 @@ class MyApp extends StatelessWidget {
 
   /// 构建桌面端应用
   Widget _buildDesktopApp() {
-    final bool deviceInfoCollect = box.read('deviceCollect') ?? true;
-
-    if (deviceInfoCollect) {
-      sendDeviceInfo();
-    }
-
     return FluentApp(
       theme: FluentThemeData(
         brightness: Brightness.light,
@@ -59,11 +53,6 @@ class MyApp extends StatelessWidget {
   Widget _buildMobileApp() {
     final String themeMode = box.read('themeMode') ?? 'system';
     final bool monetStatus = box.read('monetStatus') ?? true;
-    final bool deviceInfoCollect = box.read('deviceCollect') ?? true;
-
-    if (deviceInfoCollect) {
-      sendDeviceInfo();
-    }
 
     if (!monetStatus) {
       // 如果Monet被禁用，使用默认配色
@@ -111,22 +100,6 @@ class MyApp extends StatelessWidget {
         return ThemeMode.dark;
       default:
         return ThemeMode.system;
-    }
-  }
-
-  void sendDeviceInfo() async {
-    // TODO：发送设备数据
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (Platform.isWindows) {
-      WindowsDeviceInfo windowsDeviceInfo = await deviceInfo.windowsInfo;
-    } else if (Platform.isLinux) {
-      LinuxDeviceInfo linuxDeviceInfo = await deviceInfo.linuxInfo;
-    } else if (Platform.isAndroid) {
-      AndroidDeviceInfo androidBuildVersion = await deviceInfo.androidInfo;
-    } else if (Platform.isMacOS) {
-      MacOsDeviceInfo macOsDeviceInfo = await deviceInfo.macOsInfo;
-    } else if (Platform.isIOS) {
-      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
     }
   }
 }

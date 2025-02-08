@@ -1,4 +1,5 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:get/get.dart';
 
 class AIChat extends StatefulWidget {
   bool? isNew;
@@ -13,6 +14,7 @@ class _AIChatState extends State<AIChat> {
   final GetStorage _box = GetStorage();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
+
   final List<String> _messages = [];
   String selectedModel = '';
 
@@ -133,7 +135,7 @@ class _AIChatState extends State<AIChat> {
                     ),
                     const SizedBox(width: 8),
                     FilledButton(
-                      onPressed: _controller.text.isEmpty ? null : _sendMessage,
+                      onPressed: _sendMessage,
                       child: const Text('发送'),
                     ),
                   ],

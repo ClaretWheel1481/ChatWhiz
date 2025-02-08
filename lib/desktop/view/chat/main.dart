@@ -11,7 +11,7 @@ class _ChatState extends State<Chat> {
   final GetStorage _box = GetStorage();
 
   // 保存对话列表
-  // TODO: 用List显示，标题以用户发起的第一个问题，副标题为选择的对话
+  // TODO: 用List显示，标题以用户发起的第一个问题，副标题为选择的对话模型
   List<String> chatsList = [];
 
   @override

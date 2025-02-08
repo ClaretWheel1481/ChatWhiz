@@ -20,7 +20,6 @@ class _SettingsState extends State<Settings> {
   @override
   void initState() {
     super.initState();
-    selectedCollect = _box.read('deviceCollect') ?? true;
     selectedAutoCheckUpdate = _box.read('autoCheckUpdate') ?? true;
     selectedProxy = _box.read('proxy') ?? false;
 
@@ -73,15 +72,6 @@ class _SettingsState extends State<Settings> {
     setState(() {
       selectedProxy = value;
       _box.write('proxy', value);
-    });
-  }
-
-  // 设备信息收集设置
-  void onInfoCollect(bool? value) {
-    if (value == null) return;
-    setState(() {
-      selectedCollect = value;
-      _box.write('deviceCollect', value);
     });
   }
 
@@ -144,21 +134,6 @@ class _SettingsState extends State<Settings> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const InfoBar(
-              title: Text('提示'),
-              content: Text('启动时，将会收集一次您的设备及系统信息，仅用于统计，不会收集您的对话内容。'),
-              severity: InfoBarSeverity.info,
-              isLong: true,
-            ),
-            const SizedBox(height: 10),
-            Checkbox(
-              content: const Text("收集设备信息"),
-              checked: selectedCollect,
-              onChanged: (v) {
-                onInfoCollect(v);
-              },
-            ),
-            const SizedBox(height: 10),
             Checkbox(
               content: const Text("自动检查更新"),
               checked: selectedAutoCheckUpdate,

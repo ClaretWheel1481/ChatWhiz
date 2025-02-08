@@ -7,6 +7,8 @@ class AppConstants {
 
   // 可用模型
   static List<String> models = [
+    'deepseek-chat',
+    'deepseek-reasoner',
     'qwen-max',
     'qwen-plus',
     'qwen-turbo',
@@ -27,4 +29,7 @@ class AppConstants {
   // 智谱 API
   static String ZhipuAPI =
       'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+
+  // Deepseek API
+  static String DSAPI = 'https://api.deepseek.com/chat/completions';
 }

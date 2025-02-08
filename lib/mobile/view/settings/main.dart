@@ -67,10 +67,6 @@ class _SettingsState extends State<Settings> {
             selectedMonet: selectedMonet,
             onMonetChanged: onMonet,
           ),
-          DeviceInfoSettings(
-            selectedCollect: selectedCollect,
-            onInfoCollectChanged: onInfoCollect,
-          ),
           ListTile(
             leading: const Icon(Icons.update),
             title: const Text('检查更新'),
