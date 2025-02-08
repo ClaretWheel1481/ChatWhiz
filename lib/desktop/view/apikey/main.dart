@@ -1,4 +1,5 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 
 class Apikey extends StatefulWidget {
   const Apikey({super.key});
@@ -30,25 +31,8 @@ class _ApikeyState extends State<Apikey> {
     _box.write('OpenAIKey', OpenAIKey.text);
     _box.write('ZhipuKey', ZhipuKey.text);
     _box.write('DSKey', DSKey.text);
-    showSaved(context);
-  }
-
-  // 保存对话框
-  void showSaved(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('保存成功'),
-        actions: [
-          FilledButton(
-            child: const Text('好'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
+    showNotification(
+        context, "保存成功", "您的ApiKey很安全地保存于本地中。", InfoBarSeverity.success);
   }
 
   @override

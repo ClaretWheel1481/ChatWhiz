@@ -1,4 +1,5 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 
 class Chat extends StatefulWidget {
   const Chat({super.key});
@@ -21,40 +22,20 @@ class _ChatState extends State<Chat> {
   void _loadChats() {
     List<dynamic> storedChats = _box.read<List>('chats') ?? [];
     setState(() {
-      chatsList = List<Map<String, dynamic>>.from(storedChats);
+      chatsList = storedChats.map<Map<String, dynamic>>((dynamic chat) {
+        return {
+          "title": chat["title"],
+          "subtitle": chat["subtitle"],
+          "messages": (chat["messages"] as List<dynamic>)
+              .map<Map<String, String>>((m) => Map<String, String>.from(m))
+              .toList(),
+        };
+      }).toList();
     });
   }
 
-  // 确认删除关闭对话框
-  void showDeleteDialog(BuildContext context, int index) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('你确定删除吗？'),
-        content: const Text(
-          '删除后，该对话内容将无法恢复。',
-        ),
-        actions: [
-          Button(
-            child: const Text('是'),
-            onPressed: () {
-              _deleteChat(index);
-              Navigator.pop(context);
-            },
-          ),
-          FilledButton(
-            child: const Text('否'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   // 删除对话
-  void _deleteChat(int index) {
+  void deleteChat(int index) {
     List<dynamic> storedChats = _box.read<List>('chats') ?? [];
     storedChats.removeAt(index); // 删除对应对话
     _box.write('chats', storedChats); // 更新存储
@@ -130,7 +111,15 @@ class _ChatState extends State<Chat> {
                             icon: const Icon(FluentIcons.delete),
                             onPressed: () {
                               // 删除对话
-                              showDeleteDialog(context, index);
+                              show2ButtonsDialog(
+                                  context, '你确定删除吗？', '删除后，该对话内容将无法恢复。', () {
+                                deleteChat(index);
+                                Navigator.pop(context);
+                                showNotification(context, "删除成功", "该对话已经成功删除。",
+                                    InfoBarSeverity.success);
+                              }, () {
+                                Navigator.pop(context);
+                              });
                             },
                           ),
                         ),

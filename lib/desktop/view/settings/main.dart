@@ -1,4 +1,5 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -45,25 +46,7 @@ class _SettingsState extends State<Settings> {
 
     // 保存到 GetStorage
     _box.write('proxySettings', proxySettings.toMap());
-    showProxySaved(context);
-  }
-
-  // 保存代理设置对话框
-  void showProxySaved(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('保存成功'),
-        actions: [
-          FilledButton(
-            child: const Text('好'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
+    showNotification(context, "保存成功", "代理设置已保存。", InfoBarSeverity.success);
   }
 
   // 代理设置
@@ -73,6 +56,7 @@ class _SettingsState extends State<Settings> {
       selectedProxy = value;
       _box.write('proxy', value);
     });
+    showNotification(context, "保存成功", "当前设置已保存。", InfoBarSeverity.success);
   }
 
   // 自动检查更新设置
@@ -82,35 +66,7 @@ class _SettingsState extends State<Settings> {
       selectedAutoCheckUpdate = value;
       _box.write('autoCheckUpdate', value);
     });
-  }
-
-  // 自动检查更新关闭对话框
-  void showAutoCheckUpdateDialog(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('关闭自动检查更新'),
-        content: const Text(
-          '您需要自行前往官方仓库才能获取最新的版本情况，您确定关闭吗？',
-        ),
-        actions: [
-          Button(
-            child: const Text('是'),
-            onPressed: () {
-              onAutoCheckUpdate(false);
-              Navigator.pop(context);
-            },
-          ),
-          FilledButton(
-            child: const Text('否'),
-            onPressed: () {
-              onAutoCheckUpdate(true);
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
+    showNotification(context, "保存成功", "当前设置已保存。", InfoBarSeverity.success);
   }
 
   @override
@@ -139,7 +95,15 @@ class _SettingsState extends State<Settings> {
               checked: selectedAutoCheckUpdate,
               onChanged: (v) {
                 if (v == false) {
-                  showAutoCheckUpdateDialog(context);
+                  show2ButtonsDialog(
+                      context, "关闭自动检查更新", "您需要自行前往官方仓库才能获取最新的版本情况，您确定关闭吗？",
+                      () {
+                    onAutoCheckUpdate(false);
+                    Navigator.pop(context);
+                  }, () {
+                    onAutoCheckUpdate(true);
+                    Navigator.pop(context);
+                  });
                 } else {
                   onAutoCheckUpdate(v);
                 }
@@ -157,8 +121,11 @@ class _SettingsState extends State<Settings> {
             Row(
               children: List.generate(2, (index) {
                 return RadioButton(
-                    content:
-                        index == 0 ? const Text("Http") : const Text("Socks5"),
+                    content: index == 0
+                        ? Container(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: const Text("Http"))
+                        : const Text("Socks5"),
                     checked: selectedProxyType == index,
                     onChanged: selectedProxy
                         ? (checked) {

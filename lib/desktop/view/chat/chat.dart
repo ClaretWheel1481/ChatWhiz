@@ -1,4 +1,5 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 import 'package:flutter/services.dart';
 
 class AIChat extends StatefulWidget {
@@ -43,6 +44,7 @@ class _AIChatState extends State<AIChat> {
     });
   }
 
+  // 发送
   void _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       setState(() {
@@ -83,7 +85,9 @@ class _AIChatState extends State<AIChat> {
         isLoading = false;
       });
     } else {
-      showCheckDialog(context);
+      show1ButtonDialog(context, "内容为空", () {
+        Navigator.pop(context);
+      });
     }
   }
 
@@ -136,24 +140,6 @@ class _AIChatState extends State<AIChat> {
     }
   }
 
-  // 空对话框
-  void showCheckDialog(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (context) => ContentDialog(
-        title: const Text('内容为空'),
-        actions: [
-          Button(
-            child: const Text('是'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   // 滑动至最底部
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -199,6 +185,7 @@ class _AIChatState extends State<AIChat> {
             children: [
               Row(
                 children: [
+                  const Text("选择模型："),
                   ComboBox<String>(
                     value: selectedModel,
                     items: AppConstants.models.map((e) {
