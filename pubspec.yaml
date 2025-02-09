@@ -20,6 +20,7 @@ dependencies:
   url_launcher:
   device_info_plus:
   dio:
+  flutter_colorpicker: 
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

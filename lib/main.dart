@@ -2,6 +2,7 @@ import 'package:chatwhiz/desktop/main.dart';
 import 'package:flutter/material.dart' as md;
 import 'package:get/get.dart';
 import 'import.dart';
+import 'package:chatwhiz/mobile/notify.dart' as mn;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,17 +54,20 @@ class MyApp extends StatelessWidget {
   Widget _buildMobileApp() {
     final String themeMode = box.read('themeMode') ?? 'system';
     final bool monetStatus = box.read('monetStatus') ?? true;
+    final Color colorSeed = Color(box.read('colorSeed') ?? 0x6750A4);
 
-    if (!monetStatus) {
+    if (Platform.isIOS || !monetStatus) {
       // 如果Monet被禁用，使用默认配色
-      final lightColorScheme =
-          md.ColorScheme.fromSwatch(primarySwatch: md.Colors.blue);
-      final darkColorScheme = md.ColorScheme.fromSwatch(
-        primarySwatch: md.Colors.blue,
+      final lightColorScheme = md.ColorScheme.fromSeed(
+        seedColor: colorSeed,
+      );
+      final darkColorScheme = md.ColorScheme.fromSeed(
+        seedColor: colorSeed,
         brightness: Brightness.dark,
       );
 
       return GetMaterialApp(
+        scaffoldMessengerKey: mn.scaffoldMessengerKey,
         theme: md.ThemeData(colorScheme: lightColorScheme),
         darkTheme: md.ThemeData(colorScheme: darkColorScheme),
         themeMode: _getThemeMode(themeMode),
@@ -82,6 +86,7 @@ class MyApp extends StatelessWidget {
             );
 
         return GetMaterialApp(
+          scaffoldMessengerKey: mn.scaffoldMessengerKey,
           theme: md.ThemeData(colorScheme: lightColorScheme),
           darkTheme: md.ThemeData(colorScheme: darkColorScheme),
           themeMode: _getThemeMode(themeMode),

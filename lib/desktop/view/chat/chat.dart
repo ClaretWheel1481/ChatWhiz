@@ -141,7 +141,7 @@ class _AIChatState extends State<AIChat> {
     Dio dio = Dio();
 
     // 配置代理
-    if (_box.read('proxy')) {
+    if (_box.read('proxy') ?? false) {
       var proxySettings = _box.read('proxySettings');
       String ip = proxySettings['ip'];
       int port = proxySettings['port'];

@@ -8,34 +8,57 @@ class MobileHomePage extends StatefulWidget {
 }
 
 class _MobileHomePageState extends State<MobileHomePage> {
+  int _position = 0;
+
+  final Map<String, IconData> iconsMap = {
+    //底栏图标
+    "主页": Icons.home, "APIKey": Icons.key,
+    "设置": Icons.settings,
+  };
+
+  final List<Widget> _pages = [
+    const HomePage(),
+    const ApiKey(),
+    const Settings()
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 180.0,
-            pinned: true,
-            flexibleSpace: const FlexibleSpaceBar(
-              titlePadding: EdgeInsets.only(left: 20, bottom: 15),
-              collapseMode: CollapseMode.parallax,
-              title: Text('ChatWhiz'),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  Get.to(() => const Settings());
-                },
-              ),
-            ],
-          ),
-        ],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 150),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          // 使用淡入淡出的过渡动画
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        child: _pages[_position],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(Icons.add, color: Theme.of(context).colorScheme.onPrimary),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (position) => setState(() => _position = position),
+        currentIndex: _position,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+        items: iconsMap.keys
+            .map((key) => BottomNavigationBarItem(
+                  label: key,
+                  icon: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18.0, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _position == iconsMap.keys.toList().indexOf(key)
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Icon(iconsMap[key]),
+                  ),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                ))
+            .toList(),
       ),
     );
   }
