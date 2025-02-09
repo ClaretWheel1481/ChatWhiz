@@ -1,5 +1,4 @@
 import 'package:chatwhiz/mobile/import.dart';
-import 'package:chatwhiz/mobile/view/home/controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                             icon: const Icon(Icons.delete),
                             onPressed: () {
                               // 删除对话
-                              controller.deleteChat(index);
+                              showDeleteDialog(context, index);
                             },
                           ),
                         ),
@@ -101,6 +100,39 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add,
             color: Theme.of(context).colorScheme.onPrimaryContainer),
       ),
+    );
+  }
+
+  void showDeleteDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("确认"),
+          content: const Text("您确认删除该对话吗？"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("取消"),
+              onPressed: () {
+                Get.back();
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.deleteChat(index);
+                Get.back();
+              },
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.primary),
+                foregroundColor: WidgetStatePropertyAll(
+                    Theme.of(context).colorScheme.onPrimary),
+              ),
+              child: const Text("确认"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

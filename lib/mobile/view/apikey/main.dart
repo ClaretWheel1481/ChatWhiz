@@ -37,7 +37,8 @@ class _ApiKeyState extends State<ApiKey> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("APIKey"),
+          title: const Align(
+              alignment: Alignment.centerLeft, child: Text("APIKey")),
         ),
         body: Padding(
           padding: const EdgeInsets.all(12),
@@ -95,7 +96,7 @@ class _ApiKeyState extends State<ApiKey> {
                   obscureText: true,
                   controller: ZhipuKey,
                   decoration: const InputDecoration(
-                      labelText: "Zhipu APIKey", border: OutlineInputBorder()),
+                      labelText: "智谱 APIKey", border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 5),
                 Align(

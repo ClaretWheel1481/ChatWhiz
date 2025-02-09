@@ -205,12 +205,13 @@ class _AIChatState extends State<AIChat> {
               IconButton(
                   style: const ButtonStyle(
                       iconSize: WidgetStatePropertyAll(22.0),
-                      padding:
-                          WidgetStatePropertyAll(EdgeInsets.only(right: 10))),
+                      padding: WidgetStatePropertyAll(EdgeInsets.all(10))),
                   icon: const Icon(FluentIcons.back),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          Navigator.pop(context);
+                        }),
               Text(
                 widget.isNew ? "新对话" : "对话",
                 style: FluentTheme.of(context)

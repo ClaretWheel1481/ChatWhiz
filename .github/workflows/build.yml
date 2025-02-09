@@ -72,7 +72,7 @@ jobs:
         run: |
           version_name=$(yq e .version pubspec.yaml | cut -d "+" -f 1)
           for file in app.ipa; do
-            new_file_name="build/VerifyMe-${version_name}.ipa"
+            new_file_name="build/ChatWhiz-${version_name}.ipa"
             mv "$file" "$new_file_name"
           done
 
@@ -80,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ChatWhiz-iOS
-          path: build/VerifyMe-*.ipa
+          path: build/ChatWhiz-*.ipa
 
   build_linux:
     name: Build Linux Executable

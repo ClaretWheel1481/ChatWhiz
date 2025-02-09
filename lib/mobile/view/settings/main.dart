@@ -13,8 +13,8 @@ class _SettingsState extends State<Settings> {
   bool selectedMonet = true;
   String _themeMode = 'system';
 
-  Color pickerColor = Color(0xff443a49);
-  Color currentColor = Color(0xff443a49);
+  Color pickerColor = const Color(0xff443a49);
+  Color currentColor = const Color(0xff443a49);
 
   @override
   void initState() {
@@ -54,7 +54,10 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("设置"),
+          title: const Align(
+            alignment: Alignment.centerLeft,
+            child: Text("设置"),
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(

@@ -13,3 +13,4 @@ export 'package:chatwhiz/mobile/view/home/main.dart';
 export 'package:chatwhiz/mobile/view/apikey/main.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:chatwhiz/mobile/view/chat/main.dart';
+export 'package:chatwhiz/mobile/view/home/controller.dart';

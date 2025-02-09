@@ -36,29 +36,34 @@ class _MobileHomePageState extends State<MobileHomePage> {
         },
         child: _pages[_position],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (position) => setState(() => _position = position),
-        currentIndex: _position,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        items: iconsMap.keys
-            .map((key) => BottomNavigationBarItem(
-                  label: key,
-                  icon: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18.0, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: _position == iconsMap.keys.toList().indexOf(key)
-                          ? Theme.of(context).colorScheme.secondaryContainer
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(30),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          onTap: (position) => setState(() => _position = position),
+          currentIndex: _position,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+          items: iconsMap.keys
+              .map((key) => BottomNavigationBarItem(
+                    label: key,
+                    icon: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18.0, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _position == iconsMap.keys.toList().indexOf(key)
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Icon(iconsMap[key]),
                     ),
-                    child: Icon(iconsMap[key]),
-                  ),
-                  backgroundColor:
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                ))
-            .toList(),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.onSecondaryContainer,
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

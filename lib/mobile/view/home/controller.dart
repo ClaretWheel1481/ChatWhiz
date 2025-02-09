@@ -1,5 +1,4 @@
 import 'package:chatwhiz/mobile/import.dart';
-import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   List<Map<String, dynamic>> chatsList = [];

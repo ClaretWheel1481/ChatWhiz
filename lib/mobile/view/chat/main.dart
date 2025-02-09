@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:chatwhiz/mobile/import.dart';
-import 'package:chatwhiz/mobile/view/home/controller.dart';
 import 'package:dio/dio.dart' as d;
 import 'package:dio/io.dart';
 
@@ -203,8 +201,11 @@ class _ChatState extends State<Chat> {
                           Get.back();
                         },
                   icon: const Icon(Icons.chevron_left)),
-              title: Text(
-                widget.isNew ? "新对话" : "对话",
+              title: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.isNew ? "新对话" : "对话",
+                ),
               ),
             ),
             body: Padding(
@@ -297,7 +298,9 @@ class _ChatState extends State<Chat> {
                           // TODO: 限制为部分模型使用
                           const ElevatedButton(
                             onPressed: null,
-                            child: Text('推理'),
+                            child: Row(
+                              children: [Icon(Icons.lightbulb), Text('推理')],
+                            ),
                           ),
                           const SizedBox(
                             width: 5,
@@ -305,7 +308,12 @@ class _ChatState extends State<Chat> {
                           // TODO: 限制为部分模型使用
                           const ElevatedButton(
                             onPressed: null,
-                            child: Text('联网搜索'),
+                            child: Row(
+                              children: [
+                                Icon(Icons.wb_cloudy_rounded),
+                                Text('联网')
+                              ],
+                            ),
                           ),
                         ],
                       ),
