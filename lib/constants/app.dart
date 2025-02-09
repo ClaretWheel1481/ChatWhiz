@@ -14,7 +14,7 @@ class AppConstants {
   ];
 
   // OpenAI 模型
-  static List<String> openAIModels = ['GPT-4o', 'GPT-4o mini'];
+  static List<String> openAIModels = ['gpt-4o-mini', 'gpt-4o', 'o1'];
 
   // 智谱 (GLM) 模型
   static List<String> zhipuModels = ['glm-4-air', 'glm-4-plus'];

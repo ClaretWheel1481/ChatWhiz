@@ -1,5 +1,7 @@
 import 'package:chatwhiz/desktop/import.dart';
+import 'package:chatwhiz/desktop/view/apikey/main.dart';
 import 'package:chatwhiz/desktop/widgets/dialogs.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/services.dart';
 
 class AIChat extends StatefulWidget {
@@ -44,33 +46,50 @@ class _AIChatState extends State<AIChat> {
     });
   }
 
+  // 获取对应模型的APIKey
+  String getAPIKey(String model) {
+    if (AppConstants.dsModels.contains(model)) return _box.read('DSKey') ?? '';
+    if (AppConstants.qwenModels.contains(model))
+      return _box.read('QwenKey') ?? '';
+    if (AppConstants.openAIModels.contains(model))
+      return _box.read('OpenAIKey') ?? '';
+    if (AppConstants.zhipuModels.contains(model))
+      return _box.read('ZhipuKey') ?? '';
+    return '';
+  }
+
   // 发送
   void _sendMessage() async {
     if (_controller.text.isNotEmpty) {
-      setState(() {
-        _messages.add({"role": "user", "content": _controller.text});
-
-        // 滚动到底部
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Future.delayed(const Duration(milliseconds: 50), () {
-            _scrollToBottom();
-          });
-        });
-
-        // 发送后存储完整对话
-        _saveChatToStorage();
-        widget.isNew = false;
-
-        // 清空输入框
-        _controller.clear();
-      });
       isLoading = true;
+
       // 获取API地址
       String apiUrl = AppConstants.getAPI(selectedModel);
-      if (apiUrl.isNotEmpty) {
-        await _fetchAIResponse(apiUrl);
+
+      // 获取对应Token
+      String apiKey = getAPIKey(selectedModel);
+      if (apiUrl.isNotEmpty && apiKey.isNotEmpty) {
+        setState(() {
+          _messages.add({"role": "user", "content": _controller.text});
+
+          // 滚动到底部
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Future.delayed(const Duration(milliseconds: 50), () {
+              _scrollToBottom();
+            });
+          });
+
+          // 发送后存储完整对话
+          _saveChatToStorage();
+          widget.isNew = false;
+
+          // 清空输入框
+          _controller.clear();
+        });
+        await _fetchAIResponse(apiUrl, apiKey);
       } else {
-        print("未找到对应的 API 地址！");
+        showNotification(
+            context, "参数错误", "请确保对应模型的APIKey已经填写。", InfoBarSeverity.error);
       }
       setState(() {
         // 滚动到底部
@@ -117,26 +136,46 @@ class _AIChatState extends State<AIChat> {
     _box.write('chats', storedChats);
   }
 
-  // TODO: 实现请求模型API(需要做额外适配)（代理功能）
-  Future<void> _fetchAIResponse(String apiUrl) async {
-    print("调用 API: $apiUrl");
+  // TODO: 实现请求模型API(需要做额外适配，如图像处理)
+  Future<void> _fetchAIResponse(String apiUrl, apiKey) async {
+    Dio dio = Dio();
+
+    // 配置代理
+    if (_box.read('proxy')) {
+      var proxySettings = _box.read('proxySettings');
+      String ip = proxySettings['ip'];
+      int port = proxySettings['port'];
+
+      dio.httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          HttpClient client = HttpClient();
+          client.findProxy = (uri) {
+            // 设置代理地址
+            return 'PROXY $ip:$port;';
+          };
+          client.badCertificateCallback = (cert, host, port) => true;
+          return client;
+        },
+      );
+    }
+
     try {
       final data = {"model": selectedModel, "messages": _messages};
-      Response resp = await Dio().post(apiUrl,
+      Response resp = await dio.post(apiUrl,
           data: data,
           options: Options(headers: {
-            'Authorization': 'Bearer ${_box.read('ZhipuKey')}',
+            'Authorization': 'Bearer $apiKey',
             'Content-Type': 'application/json',
           }));
       print(resp);
-      print(resp.data['choices'][0]['message']);
       _messages.add({
         'content': resp.data['choices'][0]['message']['content'],
         'role': resp.data['choices'][0]['message']['role'],
       });
       _saveChatToStorage();
     } catch (e) {
-      print("Error:$e");
+      showNotification(
+          context, "请求错误", "检查您的网络设置以及APIKey填写是否正确！", InfoBarSeverity.error);
     }
   }
 

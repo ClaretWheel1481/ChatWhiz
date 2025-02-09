@@ -143,7 +143,6 @@ class _SettingsState extends State<Settings> {
               label: '代理服务器:',
               child: TextBox(
                 controller: ipCtr,
-                placeholder: '127.0.0.1',
                 expands: false,
                 enabled: selectedProxy,
               ),
@@ -153,7 +152,6 @@ class _SettingsState extends State<Settings> {
               label: '服务器端口:',
               child: TextBox(
                 controller: portCtr,
-                placeholder: '7890',
                 expands: false,
                 enabled: selectedProxy,
               ),
