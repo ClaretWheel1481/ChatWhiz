@@ -33,7 +33,7 @@ class _DesktopHomePageState extends State<DesktopHomePage> {
   Widget build(BuildContext context) {
     return NavigationView(
       appBar: NavigationAppBar(
-        // TODO: 图标待添加
+        // TODO: Logo图标待添加
         leading: SizedBox(),
         title: const Text(
           'ChatWhiz',

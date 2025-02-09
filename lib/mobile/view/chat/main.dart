@@ -96,7 +96,7 @@ class _ChatState extends State<Chat> {
     _box.write('chats', storedChats);
   }
 
-  // TODO: 实现请求模型API(需要做额外适配，如图像处理)（代理）
+  // TODO: 实现请求模型API(需要做额外适配，如图像处理)
   Future<void> _fetchAIResponse(String apiUrl, apiKey) async {
     d.Dio dio = d.Dio();
 
@@ -274,6 +274,7 @@ class _ChatState extends State<Chat> {
                             constraints: BoxConstraints(
                               maxWidth: MediaQuery.of(context).size.width * 0.7,
                             ),
+                            // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
                             child: SelectableText(
                               message["content"] ?? "",
                               style: const TextStyle(

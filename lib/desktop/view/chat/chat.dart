@@ -276,6 +276,7 @@ class _AIChatState extends State<AIChat> {
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.7,
                         ),
+                        // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
                         child: SelectableText(
                           message["content"] ?? "",
                           style: const TextStyle(

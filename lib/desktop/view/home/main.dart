@@ -40,7 +40,6 @@ class _HomeState extends State<Home> {
         ),
         children: const [
           SizedBox(height: 30),
-          // TODO: 添加公告等部分界面
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
