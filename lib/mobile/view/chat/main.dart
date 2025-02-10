@@ -193,19 +193,19 @@ class _ChatState extends State<Chat> {
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            widget.choosenModel!,
+                            selectedModel!,
                             style: const TextStyle(fontSize: 12),
                           )
                         ],
                       ),
               ),
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  widget.isNew
-                      ? DropdownButtonFormField<String>(
+            body: Column(
+              children: [
+                widget.isNew
+                    ? Container(
+                        margin: const EdgeInsets.all(5),
+                        child: DropdownButtonFormField<String>(
                           value: selectedModel,
                           hint: const Text('请选择模型'),
                           onChanged: widget.isNew
@@ -219,6 +219,8 @@ class _ChatState extends State<Chat> {
                               Theme.of(context).colorScheme.onSecondary,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(15)),
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder()),
                           items:
                               AppConstants.models.map<DropdownMenuItem<String>>(
                             (String model) {
@@ -228,63 +230,62 @@ class _ChatState extends State<Chat> {
                               );
                             },
                           ).toList(),
-                        )
-                      : Container(),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) {
-                        final message = _messages[index];
-                        final isUser =
-                            message["role"] == "user"; // 判断是否是用户发送的消息
+                        ),
+                      )
+                    : Container(),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[index];
+                      final isUser = message["role"] == "user"; // 判断是否是用户发送的消息
 
-                        return Align(
-                          alignment: isUser
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 14),
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: isUser
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .tertiaryContainer,
-                              borderRadius: BorderRadius.only(
-                                topLeft: const Radius.circular(15),
-                                topRight: const Radius.circular(15),
-                                bottomLeft: isUser
-                                    ? const Radius.circular(15)
-                                    : Radius.zero,
-                                bottomRight: isUser
-                                    ? Radius.zero
-                                    : const Radius.circular(15),
-                              ),
-                            ),
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.7,
-                            ),
-                            // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
-                            child: SelectableText(
-                              message["content"] ?? "",
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
+                      return Align(
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 14),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 15),
+                          decoration: BoxDecoration(
+                            color: isUser
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .tertiaryContainer,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(20),
+                              topRight: const Radius.circular(20),
+                              bottomLeft: isUser
+                                  ? const Radius.circular(20)
+                                  : Radius.zero,
+                              bottomRight: isUser
+                                  ? Radius.zero
+                                  : const Radius.circular(20),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.7,
+                          ),
+                          // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
+                          child: SelectableText(
+                            message["content"] ?? "",
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  const SizedBox(height: 5),
-                  Column(
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  child: Column(
                     children: [
                       Row(
                         children: [
@@ -315,19 +316,95 @@ class _ChatState extends State<Chat> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Row(
                         children: [
                           Expanded(
-                            child: TextField(
-                              enabled: selectedModel != null &&
-                                  selectedModel!.isNotEmpty,
-                              controller: _controller,
-                              maxLines: 2,
-                              style: const TextStyle(fontSize: 16),
-                              decoration: const InputDecoration(
-                                  labelText: "输入内容...",
-                                  border: OutlineInputBorder()),
+                            child: Stack(
+                              children: [
+                                TextField(
+                                  enabled: selectedModel != null &&
+                                      selectedModel!.isNotEmpty,
+                                  controller: _controller,
+                                  maxLines: 2,
+                                  style: const TextStyle(fontSize: 16),
+                                  decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.only(
+                                        right: 40,
+                                        top: 20,
+                                        left: 10,
+                                      ),
+                                      labelText: "输入内容",
+                                      border: OutlineInputBorder()),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.zoom_out_map),
+                                    onPressed: selectedModel != null &&
+                                            selectedModel!.isNotEmpty
+                                        ? () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return Dialog(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16.0),
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        const SizedBox(
+                                                            height: 8),
+                                                        Expanded(
+                                                          child: TextField(
+                                                            controller:
+                                                                _controller,
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        16),
+                                                            maxLines: null,
+                                                            expands: true,
+                                                            decoration:
+                                                                const InputDecoration(
+                                                              labelText: "输入内容",
+                                                              border:
+                                                                  OutlineInputBorder(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Get.back();
+                                                              },
+                                                              child: const Text(
+                                                                  "关闭"),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        : null,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -343,9 +420,9 @@ class _ChatState extends State<Chat> {
                         ],
                       ),
                     ],
-                  )
-                ],
-              ),
+                  ),
+                )
+              ],
             )));
   }
 }
