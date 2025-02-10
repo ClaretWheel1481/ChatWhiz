@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:chatwhiz/mobile/import.dart';
-
 import 'package:dio/dio.dart' as d;
-import 'package:dio/io.dart';
 
 class Chat extends StatefulWidget {
   bool isNew;

@@ -140,8 +140,10 @@ class _HomePageState extends State<HomePage> {
             ),
             ElevatedButton(
               onPressed: () {
-                deleteChat(index);
-                Get.back();
+                setState(() {
+                  deleteChat(index);
+                  Get.back();
+                });
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(

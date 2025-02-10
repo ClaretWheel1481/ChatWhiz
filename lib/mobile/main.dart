@@ -1,4 +1,5 @@
 import 'import.dart';
+import 'package:dio/dio.dart' as d;
 
 class MobileHomePage extends StatefulWidget {
   const MobileHomePage({super.key});
@@ -21,6 +22,21 @@ class _MobileHomePageState extends State<MobileHomePage> {
     const ApiKey(),
     const Settings()
   ];
+
+  void testInternet() async {
+    try {
+      d.Response resp = await d.Dio().get("https://www.baidu.com");
+      print(resp);
+    } catch (e) {
+      showNotification("连接失败，请检查您的网络设置！");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    testInternet();
+  }
 
   @override
   Widget build(BuildContext context) {
