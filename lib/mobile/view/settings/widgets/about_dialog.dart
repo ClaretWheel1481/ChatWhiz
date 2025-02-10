@@ -4,6 +4,6 @@ AboutDialog buildAboutDialog() {
   return AboutDialog(
     applicationVersion: AppConstants.appVersion,
     applicationName: 'ChatWhiz',
-    applicationLegalese: "Copyright© 2025 Lance Huang",
+    applicationLegalese: "Copyright© 2025 Linxing Huang",
   );
 }

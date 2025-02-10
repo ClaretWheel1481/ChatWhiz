@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chatwhiz/mobile/import.dart';
+
 import 'package:dio/dio.dart' as d;
 import 'package:dio/io.dart';
 
@@ -98,30 +99,9 @@ class _ChatState extends State<Chat> {
 
   // TODO: 实现请求模型API(需要做额外适配，如图像处理)
   Future<void> _fetchAIResponse(String apiUrl, apiKey) async {
-    d.Dio dio = d.Dio();
-
-    // 配置代理
-    if (_box.read('proxy') ?? false) {
-      var proxySettings = _box.read('proxySettings');
-      String ip = proxySettings['ip'];
-      int port = proxySettings['port'];
-
-      dio.httpClientAdapter = IOHttpClientAdapter(
-        createHttpClient: () {
-          HttpClient client = HttpClient();
-          client.findProxy = (uri) {
-            // 设置代理地址
-            return 'PROXY $ip:$port;';
-          };
-          client.badCertificateCallback = (cert, host, port) => true;
-          return client;
-        },
-      );
-    }
-
     try {
       final data = {"model": selectedModel, "messages": _messages};
-      d.Response resp = await dio.post(apiUrl,
+      d.Response resp = await d.Dio().post(apiUrl,
           data: data,
           options: d.Options(headers: {
             'Authorization': 'Bearer $apiKey',
@@ -190,49 +170,69 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: !isLoading,
+        canPop: false,
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
                   onPressed: isLoading
                       ? null
                       : () {
-                          Get.find<HomeController>().loadChats();
-                          Get.back();
+                          Get.off(() => const MobileHomePage());
                         },
                   icon: const Icon(Icons.chevron_left)),
               title: Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  widget.isNew ? "新对话" : "对话",
-                ),
+                child: widget.isNew
+                    ? const Text(
+                        "新对话",
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _messages.first["content"]!,
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            widget.choosenModel!,
+                            style: const TextStyle(fontSize: 12),
+                          )
+                        ],
+                      ),
               ),
             ),
             body: Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  DropdownButtonFormField<String>(
-                    value: selectedModel,
-                    hint: const Text('请选择模型'),
-                    onChanged: widget.isNew
-                        ? (String? newValue) {
-                            setState(() {
-                              selectedModel = newValue!;
-                            });
-                          }
-                        : null,
-                    dropdownColor: Theme.of(context).colorScheme.onSecondary,
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    items: AppConstants.models.map<DropdownMenuItem<String>>(
-                      (String model) {
-                        return DropdownMenuItem<String>(
-                          value: model,
-                          child: Text(model),
-                        );
-                      },
-                    ).toList(),
-                  ),
+                  widget.isNew
+                      ? DropdownButtonFormField<String>(
+                          value: selectedModel,
+                          hint: const Text('请选择模型'),
+                          onChanged: widget.isNew
+                              ? (String? newValue) {
+                                  setState(() {
+                                    selectedModel = newValue!;
+                                  });
+                                }
+                              : null,
+                          dropdownColor:
+                              Theme.of(context).colorScheme.onSecondary,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          items:
+                              AppConstants.models.map<DropdownMenuItem<String>>(
+                            (String model) {
+                              return DropdownMenuItem<String>(
+                                value: model,
+                                child: Text(model),
+                              );
+                            },
+                          ).toList(),
+                        )
+                      : Container(),
                   const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
@@ -326,7 +326,7 @@ class _ChatState extends State<Chat> {
                               enabled: selectedModel != null &&
                                   selectedModel!.isNotEmpty,
                               controller: _controller,
-                              maxLines: 5,
+                              maxLines: 2,
                               style: const TextStyle(fontSize: 16),
                               decoration: const InputDecoration(
                                   labelText: "输入内容...",
