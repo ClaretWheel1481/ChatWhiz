@@ -20,6 +20,9 @@ class _ChatState extends State<Chat> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
 
+  int reasonable = 0; // 0 = 不可用, 1 = 可用, 2 = 强制
+  bool onReasonable = false;
+  bool allowReasonable = false;
   List<Map<String, String>> _messages = [];
   String? selectedModel;
   bool isLoading = false;
@@ -32,15 +35,21 @@ class _ChatState extends State<Chat> {
       _messages = List<Map<String, String>>.from(widget.existingMessages!);
       selectedModel = widget.choosenModel!;
     }
+    _scrollToBottom();
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _scrollToBottom();
-        Future.delayed(const Duration(milliseconds: 100), () {
-          _scrollToBottom();
-        });
-      });
-    });
+  // 推理逻辑检查
+  void reasonableStatus(int r) {
+    if (r == 1) {
+      onReasonable = true;
+      allowReasonable = false;
+    } else if (r == 2) {
+      onReasonable = true;
+      allowReasonable = true;
+    } else {
+      onReasonable = false;
+      allowReasonable = true;
+    }
   }
 
   // 获取对应模型的APIKey
@@ -61,8 +70,8 @@ class _ChatState extends State<Chat> {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutSine,
         );
       }
     });
@@ -167,265 +176,285 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: false,
-        child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          Get.off(() => const MobileHomePage());
-                        },
-                  icon: const Icon(Icons.chevron_left)),
-              title: Align(
-                alignment: Alignment.centerLeft,
-                child: widget.isNew
-                    ? const Text(
-                        "新对话",
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _messages.first["content"]!,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          Text(
-                            selectedModel!,
-                            style: const TextStyle(fontSize: 12),
-                          )
-                        ],
-                      ),
-              ),
-            ),
-            body: Column(
-              children: [
-                widget.isNew
-                    ? Container(
-                        margin: const EdgeInsets.all(5),
-                        child: DropdownButtonFormField<String>(
-                          value: selectedModel,
-                          hint: const Text('请选择模型'),
-                          onChanged: widget.isNew
-                              ? (String? newValue) {
-                                  setState(() {
-                                    selectedModel = newValue!;
-                                  });
-                                }
-                              : null,
-                          dropdownColor:
-                              Theme.of(context).colorScheme.onSecondary,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder()),
-                          items:
-                              AppConstants.models.map<DropdownMenuItem<String>>(
-                            (String model) {
-                              return DropdownMenuItem<String>(
-                                value: model,
-                                child: Text(model),
-                              );
-                            },
-                          ).toList(),
-                        ),
-                      )
-                    : Container(),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      final isUser = message["role"] == "user"; // 判断是否是用户发送的消息
-
-                      return Align(
-                        alignment: isUser
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 14),
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 15),
-                          decoration: BoxDecoration(
-                            color: isUser
-                                ? Theme.of(context).colorScheme.primaryContainer
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .tertiaryContainer,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(20),
-                              topRight: const Radius.circular(20),
-                              bottomLeft: isUser
-                                  ? const Radius.circular(20)
-                                  : Radius.zero,
-                              bottomRight: isUser
-                                  ? Radius.zero
-                                  : const Radius.circular(20),
-                            ),
-                          ),
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          ),
-                          // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
-                          child: SelectableText(
-                            message["content"] ?? "",
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(
-                      top: 4, left: 8, right: 8, bottom: 10),
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  child: Column(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: isLoading
+                ? null
+                : () {
+                    Get.back();
+                  },
+            icon: const Icon(Icons.chevron_left),
+          ),
+          title: Align(
+            alignment: Alignment.centerLeft,
+            child: widget.isNew
+                ? const Text("新对话")
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          IconButton(
-                              icon: const Icon(Icons.add), onPressed: () {}),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          // TODO: 限制为部分模型使用
-                          const ElevatedButton(
-                            onPressed: null,
-                            child: Row(
-                              children: [Icon(Icons.lightbulb), Text('推理')],
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          // TODO: 限制为部分模型使用
-                          const ElevatedButton(
-                            onPressed: null,
-                            child: Row(
-                              children: [
-                                Icon(Icons.wb_cloudy_rounded),
-                                Text('联网')
-                              ],
-                            ),
-                          ),
-                        ],
+                      Text(
+                        _messages.first["content"]!,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Stack(
-                              children: [
-                                TextField(
-                                  enabled: selectedModel != null &&
-                                      selectedModel!.isNotEmpty,
-                                  controller: _controller,
-                                  maxLines: 2,
-                                  style: const TextStyle(fontSize: 16),
-                                  decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.only(
-                                        right: 40,
-                                        top: 20,
-                                        left: 10,
-                                      ),
-                                      labelText: "输入内容",
-                                      border: OutlineInputBorder()),
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.zoom_out_map),
-                                    onPressed: selectedModel != null &&
-                                            selectedModel!.isNotEmpty
-                                        ? () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return Dialog(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            16.0),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        const SizedBox(
-                                                            height: 8),
-                                                        Expanded(
-                                                          child: TextField(
-                                                            controller:
-                                                                _controller,
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        16),
-                                                            maxLines: null,
-                                                            expands: true,
-                                                            decoration:
-                                                                const InputDecoration(
-                                                              labelText: "输入内容",
-                                                              border:
-                                                                  OutlineInputBorder(),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .end,
-                                                          children: [
-                                                            TextButton(
-                                                              onPressed: () {
-                                                                Get.back();
-                                                              },
-                                                              child: const Text(
-                                                                  "关闭"),
-                                                            ),
-                                                          ],
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          }
-                                        : null,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          isLoading
-                              ? const CircularProgressIndicator()
-                              : FilledButton(
-                                  onPressed: selectedModel != null &&
-                                          selectedModel!.isNotEmpty
-                                      ? _sendMessage
-                                      : null,
-                                  child: const Text('发送'),
-                                ),
-                        ],
-                      ),
+                      Text(
+                        selectedModel!,
+                        style: const TextStyle(fontSize: 12),
+                      )
                     ],
                   ),
-                )
-              ],
-            )));
+          ),
+        ),
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            children: [
+              widget.isNew
+                  ? Container(
+                      margin: const EdgeInsets.all(5),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedModel,
+                        hint: const Text('请选择模型'),
+                        onChanged: widget.isNew
+                            ? (String? newValue) {
+                                setState(() {
+                                  selectedModel = newValue!;
+                                  reasonable = AppConstants.reasonableCheck(
+                                      selectedModel);
+                                  reasonableStatus(reasonable);
+                                });
+                              }
+                            : null,
+                        dropdownColor:
+                            Theme.of(context).colorScheme.onSecondary,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        decoration:
+                            const InputDecoration(border: OutlineInputBorder()),
+                        items: AppConstants.models
+                            .map<DropdownMenuItem<String>>((String model) {
+                          return DropdownMenuItem<String>(
+                            value: model,
+                            child: Text(model),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : Container(),
+              Expanded(
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          final message = _messages[index];
+                          final isUser = message["role"] == "user";
+                          return Align(
+                            alignment: isUser
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 14),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 4, horizontal: 15),
+                              decoration: BoxDecoration(
+                                color: isUser
+                                    ? Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .tertiaryContainer,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: const Radius.circular(20),
+                                  topRight: const Radius.circular(20),
+                                  bottomLeft: isUser
+                                      ? const Radius.circular(20)
+                                      : Radius.zero,
+                                  bottomRight: isUser
+                                      ? Radius.zero
+                                      : const Radius.circular(20),
+                                ),
+                              ),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7,
+                              ),
+                              // TODO: 替换为可显示 Markdown 语法的组件，以及一键复制功能
+                              child: SelectableText(
+                                message["content"] ?? "",
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: _messages.length,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 4, left: 8, right: 8, bottom: 10),
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                            icon: const Icon(Icons.add), onPressed: () {}),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        // TODO: 限制为部分模型使用
+                        GestureDetector(
+                          onTap: allowReasonable
+                              ? null
+                              : () => {
+                                    setState(() {
+                                      onReasonable = !onReasonable;
+                                    })
+                                  },
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                  value: onReasonable,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  onChanged: allowReasonable
+                                      ? null
+                                      : (v) {
+                                          setState(() {
+                                            onReasonable = v!;
+                                          });
+                                        }),
+                              const Text(
+                                "推理",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              TextField(
+                                enabled: selectedModel != null &&
+                                    selectedModel!.isNotEmpty,
+                                controller: _controller,
+                                maxLines: 2,
+                                style: const TextStyle(fontSize: 16),
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.only(
+                                      right: 40, top: 20, left: 10),
+                                  labelText: "输入内容",
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: IconButton(
+                                  icon: const Icon(Icons.zoom_out_map),
+                                  onPressed: selectedModel != null &&
+                                          selectedModel!.isNotEmpty
+                                      ? () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      16.0),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const SizedBox(height: 8),
+                                                      Expanded(
+                                                        child: TextField(
+                                                          controller:
+                                                              _controller,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 16),
+                                                          maxLines: null,
+                                                          expands: true,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                            labelText: "输入内容",
+                                                            border:
+                                                                OutlineInputBorder(),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Get.back();
+                                                            },
+                                                            child: const Text(
+                                                                "关闭"),
+                                                          ),
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }
+                                      : null,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        isLoading
+                            ? const CircularProgressIndicator()
+                            : FilledButton(
+                                onPressed: selectedModel != null &&
+                                        selectedModel!.isNotEmpty
+                                    ? _sendMessage
+                                    : null,
+                                child: const Text('发送'),
+                              ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

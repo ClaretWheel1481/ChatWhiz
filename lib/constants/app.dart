@@ -14,14 +14,28 @@ class AppConstants {
   ];
 
   // OpenAI 模型
-  static List<String> openAIModels = ['gpt-4o-mini', 'gpt-4o', 'o1'];
+  static List<String> openAIModels = ['gpt-4o-mini', 'gpt-4o', 'o1', 'o3-mini'];
 
   // 智谱 (GLM) 模型
   static List<String> zhipuModels = ['glm-4-air', 'glm-4-plus'];
 
+  // 允许推理的模型
+  static List<String> reasonableModels = ['o1', 'o3-mini'];
+
+  // 强制启用推理的模型
+  static List<String> forceReasonableModels = ['deepseek-reasoner'];
+
   // 统一获取所有模型
   static List<String> get models =>
       dsModels + qwenModels + openAIModels + zhipuModels;
+
+  // 判断能否推理
+  static int reasonableCheck(String? model) {
+    if (model == null) return 0;
+    if (AppConstants.forceReasonableModels.contains(model)) return 2;
+    if (AppConstants.reasonableModels.contains(model)) return 1;
+    return 0;
+  }
 
   // 根据模型名称获取 API 地址
   static String getAPI(String model) {

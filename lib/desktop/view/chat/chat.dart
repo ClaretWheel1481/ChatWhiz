@@ -312,14 +312,6 @@ class _AIChatState extends State<AIChat> {
                           onPressed: null,
                           child: Text('推理'),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        // TODO: 限制为部分模型使用
-                        const Button(
-                          onPressed: null,
-                          child: Text('联网搜索'),
-                        ),
                       ],
                     ),
                   ),

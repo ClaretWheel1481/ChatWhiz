@@ -88,11 +88,15 @@ class _HomePageState extends State<HomePage> {
                         subtitle: Text("模型：${chat["subtitle"] ?? '未知模型'}",
                             style: const TextStyle(fontSize: 14)),
                         onTap: () {
-                          Get.off(() => Chat(
-                                isNew: false,
-                                choosenModel: chat["subtitle"],
-                                existingMessages: chat["messages"],
-                              ));
+                          Get.to(() => Chat(
+                                    isNew: false,
+                                    choosenModel: chat["subtitle"],
+                                    existingMessages: chat["messages"],
+                                  ))!
+                              .then((_) {
+                            loadChats();
+                            setState(() {});
+                          });
                         },
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
@@ -113,9 +117,13 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.off(() => Chat(
-                isNew: true,
-              ));
+          Get.to(() => Chat(
+                    isNew: true,
+                  ))!
+              .then((_) {
+            loadChats();
+            setState(() {});
+          });
         },
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         child: Icon(Icons.add,

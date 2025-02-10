@@ -36,12 +36,19 @@ class _ApiKeyState extends State<ApiKey> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Align(
-              alignment: Alignment.centerLeft, child: Text("APIKey")),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+      appBar: AppBar(
+        title:
+            const Align(alignment: Alignment.centerLeft, child: Text("APIKey")),
+      ),
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          // 取消焦点，收起键盘
+          FocusScope.of(context).unfocus();
+        },
+        child: Padding(
+          padding:
+              const EdgeInsets.only(top: 5, bottom: 12, left: 12, right: 12),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -153,6 +160,8 @@ class _ApiKeyState extends State<ApiKey> {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
