@@ -263,10 +263,8 @@ class _ChatState extends State<Chat> {
                                 ? Alignment.centerRight
                                 : Alignment.centerLeft,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 14),
                               margin: const EdgeInsets.symmetric(
-                                  vertical: 4, horizontal: 15),
+                                  vertical: 8, horizontal: 20),
                               decoration: BoxDecoration(
                                 color: isUser
                                     ? Theme.of(context)
@@ -290,10 +288,39 @@ class _ChatState extends State<Chat> {
                                 maxWidth:
                                     MediaQuery.of(context).size.width * 0.7,
                               ),
-                              // TODO: 替换为可显示 Markdown 语法的组件，以及一键复制功能
-                              child: SelectableText(
-                                message["content"] ?? "",
-                                style: const TextStyle(fontSize: 16),
+                              child: Column(
+                                children: [
+                                  Markdown(
+                                    data: message["content"] ?? "",
+                                    selectable: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    styleSheet: MarkdownStyleSheet(
+                                      p: const TextStyle(fontSize: 16.0),
+                                    ),
+                                  ),
+                                  // 复制按钮
+                                  isUser
+                                      ? Container()
+                                      : Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.copy,
+                                                size: 20),
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(
+                                                  text: message["content"] ??
+                                                      ""));
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text("内容已复制")),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                ],
                               ),
                             ),
                           );
@@ -317,7 +344,6 @@ class _ChatState extends State<Chat> {
                         const SizedBox(
                           width: 5,
                         ),
-                        // TODO: 限制为部分模型使用
                         GestureDetector(
                           onTap: allowReasonable
                               ? null

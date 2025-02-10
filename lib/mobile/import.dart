@@ -14,3 +14,5 @@ export 'package:chatwhiz/mobile/view/apikey/main.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:chatwhiz/mobile/view/chat/main.dart';
 export 'package:chatwhiz/mobile/main.dart';
+export 'package:flutter/services.dart';
+export 'package:flutter_markdown/flutter_markdown.dart';

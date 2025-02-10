@@ -21,6 +21,7 @@ dependencies:
   device_info_plus:
   dio:
   flutter_colorpicker: 
+  flutter_markdown: 
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
