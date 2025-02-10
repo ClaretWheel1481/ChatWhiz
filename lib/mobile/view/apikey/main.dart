@@ -30,7 +30,7 @@ class _ApiKeyState extends State<ApiKey> {
     _box.write('OpenAIKey', OpenAIKey.text);
     _box.write('ZhipuKey', ZhipuKey.text);
     _box.write('DSKey', DSKey.text);
-    showNotification("您的ApiKey很安全地保存于本地中。");
+    showNotification("您的APIKey很安全地保存于本地中。");
   }
 
   @override
@@ -41,7 +41,7 @@ class _ApiKeyState extends State<ApiKey> {
               alignment: Alignment.centerLeft, child: Text("APIKey")),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
           child: SingleChildScrollView(
             child: Column(
               children: [

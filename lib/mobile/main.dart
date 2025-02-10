@@ -28,7 +28,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
       d.Response resp = await d.Dio().get("https://www.baidu.com");
       print(resp);
     } catch (e) {
-      showNotification("连接失败，请检查您的网络设置！");
+      showNotification("连接失败，请检查您的网络权限或设置！");
     }
   }
 
