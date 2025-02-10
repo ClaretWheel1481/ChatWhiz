@@ -34,7 +34,7 @@ class _DesktopHomePageState extends State<DesktopHomePage> {
     return NavigationView(
       appBar: NavigationAppBar(
         leading: const Image(
-          image: AssetImage("public/Logo.png"),
+          image: AssetImage("assets/Logo.png"),
           width: 25,
           height: 25,
         ),
