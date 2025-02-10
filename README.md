@@ -4,11 +4,16 @@ English | [简体中文](README_CN.md)
 
 Switch between OpenAI, Deepseek and other AI models at any time, and locally store API Key and dialog content to provide a seamless and secure dialog experience.
 
+## Notice
+
+This project is still in development. If you encounter any issues, please submit an issue or pull request.
+
 ## Features
 
 - Support OpenAI, Deepseek and other AI models (more to come)
 - Local storage of API Key and dialog content to ensure data security
 - Custom primary color (Only available on mobile)
+- Markdown support in chat content
 
 ## Screenshots
 

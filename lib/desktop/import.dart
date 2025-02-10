@@ -12,3 +12,4 @@ export 'package:chatwhiz/desktop/widgets/dialogs.dart';
 export 'package:flutter/services.dart';
 export 'package:dio/io.dart';
 export 'package:chatwhiz/desktop/view/apikey/main.dart';
+export 'package:flutter_markdown/flutter_markdown.dart';

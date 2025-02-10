@@ -20,6 +20,9 @@ class _AIChatState extends State<AIChat> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _controller = TextEditingController();
 
+  int reasonable = 0; // 0 = 不可用, 1 = 可用, 2 = 强制
+  bool onReasonable = false;
+  bool allowReasonable = false;
   List<Map<String, String>> _messages = [];
   String selectedModel = '';
   bool isLoading = false;
@@ -40,6 +43,21 @@ class _AIChatState extends State<AIChat> {
         });
       });
     });
+    reasonableStatus(AppConstants.reasonableCheck(selectedModel));
+  }
+
+  // 推理逻辑检查
+  void reasonableStatus(int r) {
+    if (r == 1) {
+      onReasonable = true;
+      allowReasonable = false;
+    } else if (r == 2) {
+      onReasonable = true;
+      allowReasonable = true;
+    } else {
+      onReasonable = false;
+      allowReasonable = true;
+    }
   }
 
   // 获取对应模型的APIKey
@@ -241,8 +259,12 @@ class _AIChatState extends State<AIChat> {
                               child: Text(e),
                             );
                           }).toList(),
-                          onChanged: (model) =>
-                              setState(() => selectedModel = model!),
+                          onChanged: (model) => setState(() {
+                            selectedModel = model!;
+                            reasonable =
+                                AppConstants.reasonableCheck(selectedModel);
+                            reasonableStatus(reasonable);
+                          }),
                           placeholder: const Text("选择对话模型"),
                         )
                       : Container(),
@@ -261,9 +283,9 @@ class _AIChatState extends State<AIChat> {
                           isUser ? Alignment.centerRight : Alignment.centerLeft,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 14),
+                            vertical: 5, horizontal: 5),
                         margin: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 15),
+                            vertical: 10, horizontal: 15),
                         decoration: BoxDecoration(
                           color: isUser
                               ? const Color.fromARGB(255, 27, 154, 255)
@@ -282,13 +304,34 @@ class _AIChatState extends State<AIChat> {
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.7,
                         ),
-                        // TODO: 替换为可显示Markdown语法的组件，以及一键复制功能
-                        child: SelectableText(
-                          message["content"] ?? "",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
+                        child: Column(
+                          children: [
+                            Markdown(
+                              data: message["content"] ?? "",
+                              selectable: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              styleSheet: MarkdownStyleSheet(
+                                  p: const TextStyle(fontSize: 16.0),
+                                  code: const TextStyle(fontSize: 14.0)),
+                            ),
+                            // 复制按钮
+                            isUser
+                                ? Container()
+                                : Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: IconButton(
+                                      icon: const Icon(FluentIcons.copy,
+                                          size: 20),
+                                      onPressed: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: message["content"] ?? ""));
+                                        showNotification(context, "通知",
+                                            "内容已复制。", InfoBarSeverity.success);
+                                      },
+                                    ),
+                                  ),
+                          ],
                         ),
                       ),
                     );
@@ -308,10 +351,17 @@ class _AIChatState extends State<AIChat> {
                           width: 5,
                         ),
                         // TODO: 限制为部分模型使用
-                        const Button(
-                          onPressed: null,
-                          child: Text('推理'),
-                        ),
+                        Checkbox(
+                          checked: onReasonable,
+                          onChanged: allowReasonable
+                              ? null
+                              : (v) {
+                                  setState(() {
+                                    onReasonable = v!;
+                                  });
+                                },
+                          content: Text("推理"),
+                        )
                       ],
                     ),
                   ),
