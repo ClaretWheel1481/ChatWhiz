@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                          maxLines: 1,
                         ),
                         subtitle: Text("模型：${chat["subtitle"] ?? '未知模型'}",
                             style: const TextStyle(fontSize: 14)),

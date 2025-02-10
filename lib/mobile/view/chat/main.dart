@@ -190,7 +190,9 @@ class _ChatState extends State<Chat> {
                           Text(
                             _messages.first["content"]!,
                             style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                           Text(
                             selectedModel!,
@@ -283,7 +285,8 @@ class _ChatState extends State<Chat> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.only(
+                      top: 4, left: 8, right: 8, bottom: 10),
                   color: Theme.of(context).colorScheme.surfaceContainer,
                   child: Column(
                     children: [
