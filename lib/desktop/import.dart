@@ -8,3 +8,7 @@ export 'package:chatwhiz/import.dart';
 export 'package:chatwhiz/constants/app.dart';
 export 'package:chatwhiz/desktop/view/chat/chat.dart';
 export 'package:chatwhiz/models/proxy.dart';
+export 'package:chatwhiz/desktop/widgets/dialogs.dart';
+export 'package:flutter/services.dart';
+export 'package:dio/io.dart';
+export 'package:chatwhiz/desktop/view/apikey/main.dart';

@@ -1,5 +1,4 @@
 import 'package:chatwhiz/desktop/import.dart';
-import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 
 class Apikey extends StatefulWidget {
   const Apikey({super.key});

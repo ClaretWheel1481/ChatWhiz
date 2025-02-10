@@ -1,4 +1,3 @@
-import 'package:chatwhiz/constants/app.dart';
 import 'package:chatwhiz/desktop/import.dart';
 
 class About extends StatefulWidget {

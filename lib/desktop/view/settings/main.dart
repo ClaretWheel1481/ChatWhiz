@@ -1,5 +1,4 @@
 import 'package:chatwhiz/desktop/import.dart';
-import 'package:chatwhiz/desktop/widgets/dialogs.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});

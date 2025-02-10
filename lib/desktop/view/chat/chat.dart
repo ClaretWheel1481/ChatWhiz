@@ -1,8 +1,4 @@
 import 'package:chatwhiz/desktop/import.dart';
-import 'package:chatwhiz/desktop/view/apikey/main.dart';
-import 'package:chatwhiz/desktop/widgets/dialogs.dart';
-import 'package:dio/io.dart';
-import 'package:flutter/services.dart';
 
 class AIChat extends StatefulWidget {
   bool isNew;
@@ -205,43 +201,53 @@ class _AIChatState extends State<AIChat> {
               IconButton(
                   style: const ButtonStyle(
                       iconSize: WidgetStatePropertyAll(22.0),
-                      padding: WidgetStatePropertyAll(EdgeInsets.all(10))),
+                      padding: WidgetStatePropertyAll(EdgeInsets.all(12))),
                   icon: const Icon(FluentIcons.back),
                   onPressed: isLoading
                       ? null
                       : () {
                           Navigator.pop(context);
                         }),
-              Text(
-                widget.isNew ? "新对话" : "对话",
-                style: FluentTheme.of(context)
-                    .typography
-                    .title
-                    ?.copyWith(fontSize: 38),
-              ),
+              widget.isNew
+                  ? Text(
+                      "新对话",
+                      style: FluentTheme.of(context)
+                          .typography
+                          .title
+                          ?.copyWith(fontSize: 34),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_messages.first["content"]!),
+                        Text(
+                          selectedModel,
+                          style: const TextStyle(fontSize: 13),
+                        )
+                      ],
+                    ),
             ],
           ),
           content: Column(
             children: [
               Row(
                 children: [
-                  const Text("选择模型："),
-                  ComboBox<String>(
-                    value: selectedModel,
-                    items: AppConstants.models.map((e) {
-                      return ComboBoxItem(
-                        value: e,
-                        child: Text(e),
-                      );
-                    }).toList(),
-                    onChanged: widget.isNew
-                        ? (model) => setState(() => selectedModel = model!)
-                        : null,
-                    placeholder: const Text("选择对话模型"),
-                  ),
+                  widget.isNew
+                      ? ComboBox<String>(
+                          value: selectedModel,
+                          items: AppConstants.models.map((e) {
+                            return ComboBoxItem(
+                              value: e,
+                              child: Text(e),
+                            );
+                          }).toList(),
+                          onChanged: (model) =>
+                              setState(() => selectedModel = model!),
+                          placeholder: const Text("选择对话模型"),
+                        )
+                      : Container(),
                 ],
               ),
-              const SizedBox(height: 8),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -257,7 +263,7 @@ class _AIChatState extends State<AIChat> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 14),
                         margin: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 10),
+                            vertical: 4, horizontal: 15),
                         decoration: BoxDecoration(
                           color: isUser
                               ? const Color.fromARGB(255, 27, 154, 255)
@@ -289,7 +295,6 @@ class _AIChatState extends State<AIChat> {
                   },
                 ),
               ),
-              const SizedBox(height: 18),
               Column(
                 children: [
                   Padding(
@@ -341,7 +346,7 @@ class _AIChatState extends State<AIChat> {
                             enabled: selectedModel.isNotEmpty,
                             controller: _controller,
                             placeholder: '输入内容...',
-                            maxLines: 5,
+                            maxLines: 3,
                             style: const TextStyle(fontSize: 16),
                           ),
                         )),
