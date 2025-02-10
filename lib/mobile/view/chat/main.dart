@@ -274,19 +274,19 @@ class _ChatState extends State<Chat> {
                                         .colorScheme
                                         .tertiaryContainer,
                                 borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(20),
-                                  topRight: const Radius.circular(20),
+                                  topLeft: const Radius.circular(15),
+                                  topRight: const Radius.circular(15),
                                   bottomLeft: isUser
-                                      ? const Radius.circular(20)
+                                      ? const Radius.circular(15)
                                       : Radius.zero,
                                   bottomRight: isUser
                                       ? Radius.zero
-                                      : const Radius.circular(20),
+                                      : const Radius.circular(15),
                                 ),
                               ),
                               constraints: BoxConstraints(
                                 maxWidth:
-                                    MediaQuery.of(context).size.width * 0.7,
+                                    MediaQuery.of(context).size.width * 0.75,
                               ),
                               child: Column(
                                 children: [
@@ -297,8 +297,8 @@ class _ChatState extends State<Chat> {
                                         const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     styleSheet: MarkdownStyleSheet(
-                                      p: const TextStyle(fontSize: 16.0),
-                                    ),
+                                        p: const TextStyle(fontSize: 16.0),
+                                        code: const TextStyle(fontSize: 14.0)),
                                   ),
                                   // 复制按钮
                                   isUser
@@ -312,11 +312,7 @@ class _ChatState extends State<Chat> {
                                               Clipboard.setData(ClipboardData(
                                                   text: message["content"] ??
                                                       ""));
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text("内容已复制")),
-                                              );
+                                              showNotification("内容已复制");
                                             },
                                           ),
                                         ),
@@ -332,8 +328,7 @@ class _ChatState extends State<Chat> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(
-                    top: 4, left: 8, right: 8, bottom: 10),
+                padding: const EdgeInsets.only(left: 8, right: 8, bottom: 20),
                 color: Theme.of(context).colorScheme.surfaceContainer,
                 child: Column(
                   children: [
@@ -376,7 +371,6 @@ class _ChatState extends State<Chat> {
                         )
                       ],
                     ),
-                    const SizedBox(height: 5),
                     Row(
                       children: [
                         Expanded(
@@ -388,11 +382,12 @@ class _ChatState extends State<Chat> {
                                 controller: _controller,
                                 maxLines: 2,
                                 style: const TextStyle(fontSize: 16),
-                                decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.only(
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.only(
                                       right: 40, top: 20, left: 10),
-                                  labelText: "输入内容",
-                                  border: OutlineInputBorder(),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 ),
                               ),
                               Positioned(
@@ -462,7 +457,7 @@ class _ChatState extends State<Chat> {
                             ],
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 5),
                         isLoading
                             ? const CircularProgressIndicator()
                             : FilledButton(
