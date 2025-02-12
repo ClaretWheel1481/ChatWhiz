@@ -30,5 +30,6 @@
     "check_network_and_apikey": "请检查您的网络以及APIKey是否填写正确。",
     "content_copied": "内容已复制",
     "saved": "已保存",
-    "success": "成功"
+    "success": "成功",
+    "upload_image": "上传图片"
 }

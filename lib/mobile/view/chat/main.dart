@@ -113,7 +113,7 @@ class _ChatState extends State<Chat> {
             'Authorization': 'Bearer $apiKey',
             'Content-Type': 'application/json',
           }));
-      print(resp);
+      debugPrint(resp.statusMessage);
       _messages.add({
         'content': resp.data['choices'][0]['message']['content'],
         'role': resp.data['choices'][0]['message']['role'],
@@ -275,7 +275,7 @@ class _ChatState extends State<Chat> {
                                       radius: 22,
                                       backgroundImage: AssetImage(
                                           AppConstants.getImg(selectedModel!)),
-                                      backgroundColor: Colors.transparent,
+                                      backgroundColor: Colors.white,
                                     ),
                                   ),
                                 Flexible(
@@ -357,8 +357,32 @@ class _ChatState extends State<Chat> {
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                            icon: const Icon(Icons.add), onPressed: () {}),
+                        PopupMenuButton<int>(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15))),
+                          padding: const EdgeInsets.all(18.0),
+                          // offset: const Offset(0, -10),
+                          shadowColor: Colors.black38,
+                          elevation: 8,
+                          color:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          onSelected: (value) async {},
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              value: 1,
+                              child: ListTile(
+                                leading: const Icon(Icons.image),
+                                title: Text(FlutterI18n.translate(
+                                    context, "upload_image")),
+                              ),
+                            ),
+                          ],
+                          icon: Icon(Icons.add,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer),
+                        ),
                         const SizedBox(
                           width: 5,
                         ),
@@ -421,60 +445,8 @@ class _ChatState extends State<Chat> {
                                   onPressed: selectedModel != null &&
                                           selectedModel!.isNotEmpty
                                       ? () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return Dialog(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      16.0),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      const SizedBox(height: 8),
-                                                      Expanded(
-                                                        child: TextField(
-                                                          controller:
-                                                              _controller,
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 16),
-                                                          maxLines: null,
-                                                          expands: true,
-                                                          decoration:
-                                                              const InputDecoration(
-                                                            border:
-                                                                OutlineInputBorder(),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .end,
-                                                        children: [
-                                                          TextButton(
-                                                            onPressed: () {
-                                                              Get.back();
-                                                            },
-                                                            child: Text(
-                                                                FlutterI18n
-                                                                    .translate(
-                                                                        context,
-                                                                        "close")),
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          );
+                                          showLongTextBottomSheet(
+                                              context, _controller);
                                         }
                                       : null,
                                 ),
@@ -482,7 +454,7 @@ class _ChatState extends State<Chat> {
                             ],
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 10),
                         isLoading
                             ? const CircularProgressIndicator()
                             : FilledButton(

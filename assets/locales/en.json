@@ -30,5 +30,6 @@
     "check_network_and_apikey": "Please check network and APIKey is correct",
     "content_copied": "Content copied",
     "saved": "Saved",
-    "success":"Success"
+    "success":"Success",
+    "upload_image": "Upload Image"
 }

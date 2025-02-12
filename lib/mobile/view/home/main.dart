@@ -17,8 +17,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     // 翻译页面
     _languageCode = _box.read('languageCode') ?? 'en';
-    Future.delayed(Duration.zero, () async {
-      await FlutterI18n.refresh(context, Locale(_languageCode));
+    Future.delayed(Duration.zero, () {
+      FlutterI18n.refresh(context, Locale(_languageCode));
     });
     loadChats();
   }
