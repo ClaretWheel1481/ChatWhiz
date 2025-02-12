@@ -10,10 +10,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> chatsList = [];
   final GetStorage _box = GetStorage();
+  String _languageCode = 'en';
 
   @override
   void initState() {
     super.initState();
+    // 翻译页面
+    _languageCode = _box.read('languageCode') ?? 'en';
+    Future.delayed(Duration.zero, () async {
+      await FlutterI18n.refresh(context, Locale(_languageCode));
+    });
     loadChats();
   }
 
@@ -79,13 +85,15 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ListTile(
                         title: Text(
-                          chat["title"] ?? "未知标题",
+                          chat["title"] ??
+                              FlutterI18n.translate(context, "unknown"),
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        subtitle: Text("模型：${chat["subtitle"] ?? '未知模型'}",
+                        subtitle: Text(
+                            "${FlutterI18n.translate(context, "model")}：${chat["subtitle"] ?? FlutterI18n.translate(context, "unknown")}",
                             style: const TextStyle(fontSize: 14)),
                         onTap: () {
                           Get.to(() => Chat(
@@ -137,11 +145,12 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("确认"),
-          content: const Text("您确认删除该对话吗？"),
+          title: Text(FlutterI18n.translate(context, "confirm")),
+          content: Text(FlutterI18n.translate(
+              context, "are_you_sure_to_delete_this_conversation")),
           actions: <Widget>[
             TextButton(
-              child: const Text("取消"),
+              child: Text(FlutterI18n.translate(context, "cancel")),
               onPressed: () {
                 Get.back();
               },
@@ -151,6 +160,7 @@ class _HomePageState extends State<HomePage> {
                 setState(() {
                   deleteChat(index);
                   Get.back();
+                  showNotification(FlutterI18n.translate(context, "success"));
                 });
               },
               style: ButtonStyle(
@@ -159,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: WidgetStatePropertyAll(
                     Theme.of(context).colorScheme.onPrimary),
               ),
-              child: const Text("确认"),
+              child: Text(FlutterI18n.translate(context, "ok")),
             ),
           ],
         );

@@ -26,10 +26,17 @@ class _ChatState extends State<Chat> {
   List<Map<String, String>> _messages = [];
   String? selectedModel;
   bool isLoading = false;
+  String _languageCode = 'en';
 
   @override
   void initState() {
     super.initState();
+
+    // 翻译页面
+    _languageCode = _box.read('languageCode') ?? 'en';
+    Future.delayed(Duration.zero, () async {
+      await FlutterI18n.refresh(context, Locale(_languageCode));
+    });
 
     if (!widget.isNew && widget.existingMessages != null) {
       _messages = List<Map<String, String>>.from(widget.existingMessages!);
@@ -77,8 +84,9 @@ class _ChatState extends State<Chat> {
   // 存储完整对话
   void _saveChatToStorage() {
     final storedChats = _box.read<List>('chats') ?? [];
-    final chatTitle =
-        _messages.isNotEmpty ? _messages.first["content"] ?? "新对话" : "新对话";
+    final chatTitle = _messages.isNotEmpty
+        ? _messages.first["content"] ?? "unknown"
+        : "New Chat";
     if (widget.isNew) {
       storedChats.add({
         "title": chatTitle,
@@ -110,9 +118,9 @@ class _ChatState extends State<Chat> {
         'content': resp.data['choices'][0]['message']['content'],
         'role': resp.data['choices'][0]['message']['role'],
       });
-      _saveChatToStorage();
     } catch (e) {
-      showNotification("请检查您的网络设置以及APIKey填写是否正确！");
+      showNotification(
+          FlutterI18n.translate(context, "check_network_and_apikey"));
     }
   }
 
@@ -128,13 +136,12 @@ class _ChatState extends State<Chat> {
       final apiKey = getAPIKey(selectedModel!);
 
       if (apiUrl.isEmpty || apiKey.isEmpty) {
-        showNotification("请确保对应模型的APIKey已经填写。");
+        showNotification(FlutterI18n.translate(context, "check_apikey"));
         setState(() => isLoading = false);
         return;
       }
       setState(() {
         _messages.add({"role": "user", "content": _controller.text});
-        _saveChatToStorage();
 
         // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -147,6 +154,7 @@ class _ChatState extends State<Chat> {
         _controller.clear();
       });
       await _fetchAIResponse(apiUrl, apiKey);
+      _saveChatToStorage();
       setState(() {
         // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -160,7 +168,7 @@ class _ChatState extends State<Chat> {
         isLoading = false;
       });
     } else {
-      showNotification("内容为空。");
+      showNotification(FlutterI18n.translate(context, "input_content"));
     }
   }
 
@@ -181,7 +189,7 @@ class _ChatState extends State<Chat> {
           title: Align(
             alignment: Alignment.centerLeft,
             child: _messages.isEmpty
-                ? const Text("新对话")
+                ? Text(FlutterI18n.translate(context, "new_chat"))
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +221,8 @@ class _ChatState extends State<Chat> {
                       margin: const EdgeInsets.all(5),
                       child: DropdownButtonFormField<String>(
                         value: selectedModel,
-                        hint: const Text('请选择模型'),
+                        hint: Text(
+                            FlutterI18n.translate(context, "choose_model")),
                         onChanged: widget.isNew
                             ? (String? newValue) {
                                 setState(() {
@@ -261,7 +270,7 @@ class _ChatState extends State<Chat> {
                               children: [
                                 if (!isUser)
                                   Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
+                                    padding: const EdgeInsets.only(right: 15.0),
                                     child: CircleAvatar(
                                       radius: 22,
                                       backgroundImage: AssetImage(
@@ -271,7 +280,7 @@ class _ChatState extends State<Chat> {
                                   ),
                                 Flexible(
                                   child: Container(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(5),
                                     decoration: BoxDecoration(
                                       color: isUser
                                           ? Theme.of(context)
@@ -281,7 +290,7 @@ class _ChatState extends State<Chat> {
                                               .colorScheme
                                               .tertiaryContainer,
                                       borderRadius: const BorderRadius.all(
-                                        Radius.circular(15),
+                                        Radius.circular(20),
                                       ),
                                     ),
                                     child: Column(
@@ -311,7 +320,10 @@ class _ChatState extends State<Chat> {
                                                 Clipboard.setData(ClipboardData(
                                                     text: message["content"] ??
                                                         ""));
-                                                showNotification("内容已复制");
+                                                showNotification(
+                                                    FlutterI18n.translate(
+                                                        context,
+                                                        "content_copied"));
                                               },
                                             ),
                                           ),
@@ -321,7 +333,7 @@ class _ChatState extends State<Chat> {
                                 ),
                                 if (isUser)
                                   const Padding(
-                                    padding: EdgeInsets.only(left: 8.0),
+                                    padding: EdgeInsets.only(left: 15.0),
                                     child: CircleAvatar(
                                       radius: 22,
                                       backgroundImage:
@@ -371,9 +383,9 @@ class _ChatState extends State<Chat> {
                                             onReasonable = v!;
                                           });
                                         }),
-                              const Text(
-                                "推理",
-                                style: TextStyle(
+                              Text(
+                                FlutterI18n.translate(context, "reasoning"),
+                                style: const TextStyle(
                                   fontSize: 16,
                                 ),
                               )
@@ -435,7 +447,6 @@ class _ChatState extends State<Chat> {
                                                           expands: true,
                                                           decoration:
                                                               const InputDecoration(
-                                                            labelText: "输入内容",
                                                             border:
                                                                 OutlineInputBorder(),
                                                           ),
@@ -450,8 +461,11 @@ class _ChatState extends State<Chat> {
                                                             onPressed: () {
                                                               Get.back();
                                                             },
-                                                            child: const Text(
-                                                                "关闭"),
+                                                            child: Text(
+                                                                FlutterI18n
+                                                                    .translate(
+                                                                        context,
+                                                                        "close")),
                                                           ),
                                                         ],
                                                       )
@@ -476,7 +490,8 @@ class _ChatState extends State<Chat> {
                                         selectedModel!.isNotEmpty
                                     ? _sendMessage
                                     : null,
-                                child: const Text('发送'),
+                                child: Text(
+                                    FlutterI18n.translate(context, "send")),
                               ),
                       ],
                     ),

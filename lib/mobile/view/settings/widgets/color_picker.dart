@@ -1,7 +1,4 @@
-import 'package:chatwhiz/mobile/notify.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:get/get.dart';
+import 'package:chatwhiz/mobile/import.dart';
 
 // 颜色选择对话框
 void showColorPickerDialog(
@@ -12,7 +9,7 @@ void showColorPickerDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: const Text("选取一个颜色"),
+        title: Text(FlutterI18n.translate(context, "custom_color")),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickerColor,
@@ -21,7 +18,7 @@ void showColorPickerDialog(
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text("取消"),
+            child: Text(FlutterI18n.translate(context, "cancel")),
             onPressed: () {
               Get.back();
             },
@@ -33,11 +30,12 @@ void showColorPickerDialog(
               foregroundColor: WidgetStatePropertyAll(
                   Theme.of(context).colorScheme.onPrimary),
             ),
-            child: const Text("确认"),
+            child: Text(FlutterI18n.translate(context, "save")),
             onPressed: () {
               onColorSelected(pickerColor);
               Get.back();
-              showNotification("颜色已保存，重启后生效。");
+              showNotification(
+                  FlutterI18n.translate(context, "effective_after_reboot"));
             },
           ),
         ],

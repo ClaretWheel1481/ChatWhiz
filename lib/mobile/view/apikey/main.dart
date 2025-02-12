@@ -13,15 +13,21 @@ class _ApiKeyState extends State<ApiKey> {
   final TextEditingController OpenAIKey = TextEditingController();
   final TextEditingController ZhipuKey = TextEditingController();
   final TextEditingController DSKey = TextEditingController();
+  String _languageCode = 'en';
 
   @override
   void initState() {
+    super.initState();
+    // 翻译页面
+    _languageCode = _box.read('languageCode') ?? 'en';
+    Future.delayed(Duration.zero, () async {
+      await FlutterI18n.refresh(context, Locale(_languageCode));
+    });
+
     QwenKey.text = _box.read('QwenKey') ?? '';
     OpenAIKey.text = _box.read('OpenAIKey') ?? '';
     ZhipuKey.text = _box.read('ZhipuKey') ?? '';
     DSKey.text = _box.read('DSKey') ?? '';
-
-    super.initState();
   }
 
   // Key持久化
@@ -30,7 +36,7 @@ class _ApiKeyState extends State<ApiKey> {
     _box.write('OpenAIKey', OpenAIKey.text);
     _box.write('ZhipuKey', ZhipuKey.text);
     _box.write('DSKey', DSKey.text);
-    showNotification("您的APIKey很安全地保存于本地中。");
+    showNotification(FlutterI18n.translate(context, "saved"));
   }
 
   @override
@@ -67,9 +73,9 @@ class _ApiKeyState extends State<ApiKey> {
                         await launchUrl(
                             Uri.parse('https://platform.deepseek.com/sign_in'));
                       },
-                      child: const Text(
-                        "如何获取？",
-                        style: TextStyle(
+                      child: Text(
+                        FlutterI18n.translate(context, "howtogetit"),
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                         ),
@@ -90,9 +96,9 @@ class _ApiKeyState extends State<ApiKey> {
                         await launchUrl(Uri.parse(
                             'https://platform.openai.com/docs/quickstart?language-preference=curl&quickstart-example'));
                       },
-                      child: const Text(
-                        "如何获取？",
-                        style: TextStyle(
+                      child: Text(
+                        FlutterI18n.translate(context, "howtogetit"),
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                         ),
@@ -103,7 +109,8 @@ class _ApiKeyState extends State<ApiKey> {
                   obscureText: true,
                   controller: ZhipuKey,
                   decoration: const InputDecoration(
-                      labelText: "智谱 APIKey", border: OutlineInputBorder()),
+                      labelText: "ChatGLM APIKey",
+                      border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 5),
                 Align(
@@ -113,9 +120,9 @@ class _ApiKeyState extends State<ApiKey> {
                         await launchUrl(Uri.parse(
                             'https://bigmodel.cn/dev/api/http-call/http-auth'));
                       },
-                      child: const Text(
-                        "如何获取？",
-                        style: TextStyle(
+                      child: Text(
+                        FlutterI18n.translate(context, "howtogetit"),
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                         ),
@@ -126,7 +133,7 @@ class _ApiKeyState extends State<ApiKey> {
                   obscureText: true,
                   controller: QwenKey,
                   decoration: const InputDecoration(
-                      labelText: "千问 APIKey", border: OutlineInputBorder()),
+                      labelText: "Qwen APIKey", border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 5),
                 Align(
@@ -136,9 +143,9 @@ class _ApiKeyState extends State<ApiKey> {
                         await launchUrl(Uri.parse(
                             'https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen'));
                       },
-                      child: const Text(
-                        "如何获取？",
-                        style: TextStyle(
+                      child: Text(
+                        FlutterI18n.translate(context, "howtogetit"),
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                         ),
@@ -155,7 +162,7 @@ class _ApiKeyState extends State<ApiKey> {
                     foregroundColor: WidgetStatePropertyAll(
                         Theme.of(context).colorScheme.onPrimary),
                   ),
-                  child: const Text("保存"),
+                  child: Text(FlutterI18n.translate(context, "save")),
                 ),
               ],
             ),

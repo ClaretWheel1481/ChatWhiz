@@ -1,8 +1,6 @@
 import 'package:chatwhiz/mobile/import.dart';
 import 'dart:io';
 
-import 'package:flutter_i18n/flutter_i18n.dart';
-
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -40,14 +38,14 @@ class _SettingsState extends State<Settings> {
       _languageCode = languageCode;
     });
     Locale newLocale = Locale(languageCode);
-    await FlutterI18n.refresh(context, newLocale);
     _box.write('languageCode', languageCode);
+    await FlutterI18n.refresh(context, newLocale);
   }
 
   // 动态构建语言选项
   List<Widget> _buildLanguageList() {
     final languages = [
-      // {'code': 'en', 'name': 'English'},
+      {'code': 'en', 'name': 'English'},
       {'code': 'zh_CN', 'name': '中文 (简体)'},
     ];
 
@@ -61,6 +59,7 @@ class _SettingsState extends State<Settings> {
     }).toList();
   }
 
+  // 保存主题
   void _saveThemeMode(String themeMode) {
     setState(() {
       _themeMode = themeMode;
@@ -81,16 +80,16 @@ class _SettingsState extends State<Settings> {
       selectedMonet = value;
     });
     _box.write('monetStatus', value);
-    showNotification("已保存，重启后生效。");
+    showNotification(FlutterI18n.translate(context, "effective_after_reboot"));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Align(
+          title: Align(
             alignment: Alignment.centerLeft,
-            child: Text("设置"),
+            child: Text(FlutterI18n.translate(context, "settings")),
           ),
         ),
         body: SingleChildScrollView(
@@ -98,7 +97,7 @@ class _SettingsState extends State<Settings> {
             children: [
               ExpansionTile(
                 leading: const Icon(Icons.language),
-                title: Text("语言"),
+                title: Text(FlutterI18n.translate(context, "language")),
                 children: [
                   ..._buildLanguageList(),
                 ],
@@ -114,10 +113,10 @@ class _SettingsState extends State<Settings> {
               ListTile(
                 enabled: !selectedMonet,
                 leading: const Icon(Icons.color_lens),
-                title: const Text("自定义颜色"),
-                subtitle: const Text(
-                  "重启后生效",
-                  style: TextStyle(
+                title: Text(FlutterI18n.translate(context, "custom_color")),
+                subtitle: Text(
+                  FlutterI18n.translate(context, "effective_after_reboot"),
+                  style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 12.0,
                   ),
@@ -131,12 +130,12 @@ class _SettingsState extends State<Settings> {
               ),
               ListTile(
                 leading: const Icon(Icons.update),
-                title: const Text('检查更新'),
+                title: Text(FlutterI18n.translate(context, "check_update")),
                 onTap: () {},
               ),
               ListTile(
                 leading: const Icon(Icons.info),
-                title: const Text('关于'),
+                title: Text(FlutterI18n.translate(context, "about")),
                 onTap: () {
                   showDialog(
                     context: context,

@@ -16,3 +16,5 @@ export 'package:chatwhiz/mobile/view/chat/main.dart';
 export 'package:chatwhiz/mobile/main.dart';
 export 'package:flutter/services.dart';
 export 'package:flutter_markdown/flutter_markdown.dart';
+export 'package:flutter_i18n/flutter_i18n.dart';
+export 'package:flutter_colorpicker/flutter_colorpicker.dart';

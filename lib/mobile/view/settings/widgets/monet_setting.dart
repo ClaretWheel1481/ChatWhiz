@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:chatwhiz/import.dart';
 import 'package:flutter/material.dart';
 
 class MonetSettings extends StatelessWidget {
@@ -18,10 +18,10 @@ class MonetSettings extends StatelessWidget {
     return ListTile(
       enabled: isEnabled,
       leading: const Icon(Icons.color_lens),
-      title: const Text('Monet取色'),
-      subtitle: const Text(
-        '重启后生效',
-        style: TextStyle(
+      title: Text(FlutterI18n.translate(context, "monet_color")),
+      subtitle: Text(
+        FlutterI18n.translate(context, "effective_after_reboot"),
+        style: const TextStyle(
           color: Colors.grey,
           fontSize: 12.0,
         ),

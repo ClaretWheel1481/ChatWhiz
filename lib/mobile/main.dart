@@ -9,12 +9,26 @@ class MobileHomePage extends StatefulWidget {
 }
 
 class _MobileHomePageState extends State<MobileHomePage> {
+  final GetStorage _box = GetStorage();
+  String _languageCode = 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    // 翻译页面
+    _languageCode = _box.read('languageCode') ?? 'en';
+    Future.delayed(Duration.zero, () async {
+      await FlutterI18n.refresh(context, Locale(_languageCode));
+    });
+    testInternet();
+  }
+
   int _position = 0;
 
   final Map<String, IconData> iconsMap = {
     //底栏图标
-    "主页": Icons.home, "APIKey": Icons.key,
-    "设置": Icons.settings,
+    "home": Icons.home, "apikey": Icons.key,
+    "settings": Icons.settings,
   };
 
   final List<Widget> _pages = [
@@ -31,12 +45,6 @@ class _MobileHomePageState extends State<MobileHomePage> {
     } catch (e) {
       showNotification("网络连接失败，请检查您的权限或设置！");
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    testInternet();
   }
 
   @override
@@ -64,7 +72,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
           backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           items: iconsMap.keys
               .map((key) => BottomNavigationBarItem(
-                    label: key,
+                    label: FlutterI18n.translate(context, key),
                     icon: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 18.0, vertical: 6),
