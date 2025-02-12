@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(() => Chat(
+          Get.to(() => const Chat(
                     isNew: true,
                   ))!
               .then((_) {

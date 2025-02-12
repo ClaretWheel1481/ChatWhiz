@@ -1,4 +1,5 @@
-import 'package:chatwhiz/desktop/main.dart';
+import 'package:chatwhiz/desktop/import.dart' as desktop;
+import 'package:chatwhiz/mobile/import.dart' as mobile;
 import 'package:flutter/material.dart' as md;
 import 'package:get/get.dart';
 import 'import.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Colors.blue,
       ),
-      home: const DesktopHomePage(),
+      home: const desktop.DesktopHomePage(),
     );
   }
 
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
     final String themeMode = box.read('themeMode') ?? 'system';
     final bool monetStatus = box.read('monetStatus') ?? true;
     final Color colorSeed = Color(box.read('colorSeed') ?? 0x6750A4);
+    final String languageCode = box.read('languageCode') ?? 'en';
 
     if (Platform.isIOS || !monetStatus) {
       // 如果Monet被禁用，使用默认配色
@@ -67,6 +69,16 @@ class MyApp extends StatelessWidget {
       );
 
       return GetMaterialApp(
+        locale: Locale(languageCode),
+        fallbackLocale: const Locale('en'),
+        localizationsDelegates: [
+          FlutterI18nDelegate(
+              translationLoader: FileTranslationLoader(
+                  useCountryCode: true, basePath: 'assets/locales'),
+              missingTranslationHandler: (key, locale) {
+                mobile.showNotification("i18n loading error");
+              }),
+        ],
         scaffoldMessengerKey: mn.scaffoldMessengerKey,
         theme: md.ThemeData(colorScheme: lightColorScheme),
         darkTheme: md.ThemeData(colorScheme: darkColorScheme),
@@ -86,6 +98,16 @@ class MyApp extends StatelessWidget {
             );
 
         return GetMaterialApp(
+          locale: Locale(languageCode),
+          fallbackLocale: const Locale('en'),
+          localizationsDelegates: [
+            FlutterI18nDelegate(
+                translationLoader: FileTranslationLoader(
+                    useCountryCode: true, basePath: 'assets/locales'),
+                missingTranslationHandler: (key, locale) {
+                  mobile.showNotification("i18n loading error");
+                }),
+          ],
           scaffoldMessengerKey: mn.scaffoldMessengerKey,
           theme: md.ThemeData(colorScheme: lightColorScheme),
           darkTheme: md.ThemeData(colorScheme: darkColorScheme),

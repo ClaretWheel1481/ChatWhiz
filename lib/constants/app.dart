@@ -25,6 +25,15 @@ class AppConstants {
   // 强制启用推理的模型
   static List<String> forceReasonableModels = ['deepseek-reasoner'];
 
+  // 可图像处理的模型
+  static List<String> analyzeImageModels = [
+    'gpt-4o-mini',
+    'gpt-4o',
+    'o1',
+    'o3-mini',
+    'deepseek-reasoner'
+  ];
+
   // 统一获取所有模型
   static List<String> get models =>
       dsModels + qwenModels + openAIModels + zhipuModels;

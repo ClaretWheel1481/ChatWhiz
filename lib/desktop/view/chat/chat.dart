@@ -1,11 +1,11 @@
 import 'package:chatwhiz/desktop/import.dart';
 
 class AIChat extends StatefulWidget {
-  bool isNew;
-  String? choosenModel;
-  List<Map<String, String>>? existingMessages;
+  final bool isNew;
+  final String? choosenModel;
+  final List<Map<String, String>>? existingMessages;
 
-  AIChat(
+  const AIChat(
       {super.key,
       required this.isNew,
       this.existingMessages,
@@ -48,16 +48,11 @@ class _AIChatState extends State<AIChat> {
 
   // 推理逻辑检查
   void reasonableStatus(int r) {
-    if (r == 1) {
-      onReasonable = true;
-      allowReasonable = false;
-    } else if (r == 2) {
-      onReasonable = true;
-      allowReasonable = true;
-    } else {
-      onReasonable = false;
-      allowReasonable = true;
-    }
+    setState(() {
+      onReasonable = (r == 1 || r == 2);
+      // 当 r==1 时，不允许修改推理状态，其他情况允许
+      allowReasonable = (r != 1);
+    });
   }
 
   // 获取对应模型的APIKey
@@ -78,33 +73,31 @@ class _AIChatState extends State<AIChat> {
       isLoading = true;
 
       // 获取API地址
-      String apiUrl = AppConstants.getAPI(selectedModel);
+      final apiUrl = AppConstants.getAPI(selectedModel);
 
       // 获取对应Token
-      String apiKey = getAPIKey(selectedModel);
-      if (apiUrl.isNotEmpty && apiKey.isNotEmpty) {
-        setState(() {
-          _messages.add({"role": "user", "content": _controller.text});
+      final apiKey = getAPIKey(selectedModel);
 
-          // 滚动到底部
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Future.delayed(const Duration(milliseconds: 50), () {
-              _scrollToBottom();
-            });
-          });
-
-          // 发送后存储完整对话
-          _saveChatToStorage();
-          widget.isNew = false;
-
-          // 清空输入框
-          _controller.clear();
-        });
-        await _fetchAIResponse(apiUrl, apiKey);
-      } else {
+      if (apiUrl.isEmpty || apiKey.isEmpty) {
         showNotification(
             context, "参数错误", "请确保对应模型的APIKey已经填写。", InfoBarSeverity.error);
+        setState(() => isLoading = false);
+        return;
       }
+      setState(() {
+        _messages.add({"role": "user", "content": _controller.text});
+
+        // 滚动到底部
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Future.delayed(const Duration(milliseconds: 50), () {
+            _scrollToBottom();
+          });
+        });
+
+        // 清空输入框
+        _controller.clear();
+      });
+      await _fetchAIResponse(apiUrl, apiKey);
       setState(() {
         // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -126,27 +119,22 @@ class _AIChatState extends State<AIChat> {
 
   // 存储完整对话
   void _saveChatToStorage() {
-    List<dynamic> storedChats = _box.read<List>('chats') ?? [];
-
-    // 如果是新对话，则创建新记录
+    final storedChats = _box.read<List>('chats') ?? [];
+    final chatTitle =
+        _messages.isNotEmpty ? _messages.first["content"] ?? "新对话" : "新对话";
     if (widget.isNew) {
       storedChats.add({
-        "title": _messages.isNotEmpty ? _messages.first["content"] : "新对话",
+        "title": chatTitle,
         "subtitle": selectedModel,
-        "messages": _messages, // 存储完整对话
+        "messages": _messages,
       });
     } else {
-      // 查找当前对话并更新
-      for (var chat in storedChats) {
-        if (chat["title"] ==
-            (_messages.isNotEmpty ? _messages.first["content"] : "")) {
-          chat["messages"] = _messages;
-          break;
-        }
+      final index =
+          storedChats.indexWhere((chat) => chat["title"] == chatTitle);
+      if (index != -1) {
+        storedChats[index]["messages"] = _messages;
       }
     }
-
-    // 存入 GetStorage
     _box.write('chats', storedChats);
   }
 
@@ -199,7 +187,7 @@ class _AIChatState extends State<AIChat> {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.easeInOut,
         );
       }
@@ -226,7 +214,7 @@ class _AIChatState extends State<AIChat> {
                       : () {
                           Navigator.pop(context);
                         }),
-              widget.isNew
+              _messages.isEmpty
                   ? Text(
                       "新对话",
                       style: FluentTheme.of(context)
@@ -250,7 +238,7 @@ class _AIChatState extends State<AIChat> {
             children: [
               Row(
                 children: [
-                  widget.isNew
+                  _messages.isEmpty
                       ? ComboBox<String>(
                           value: selectedModel,
                           items: AppConstants.models.map((e) {
