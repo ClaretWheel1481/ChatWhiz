@@ -68,4 +68,21 @@ class AppConstants {
 
   // Deepseek API
   static String DSAPI = 'https://api.deepseek.com/chat/completions';
+
+  // 根据模型名称获取模型头像地址
+  static String getImg(String model) {
+    if (dsModels.contains(model)) return DSImg;
+    if (qwenModels.contains(model)) return QwenImg;
+    if (openAIModels.contains(model)) return OpenAIImg;
+    if (zhipuModels.contains(model)) return ZhipuImg;
+    return "assets/images/user.png";
+  }
+
+  static String DSImg = "assets/images/deepseek.png";
+
+  static String QwenImg = "assets/images/qwen.png";
+
+  static String OpenAIImg = "assets/images/openai.png";
+
+  static String ZhipuImg = "assets/images/zhipu.png";
 }

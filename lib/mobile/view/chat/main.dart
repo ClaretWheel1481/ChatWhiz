@@ -35,6 +35,8 @@ class _ChatState extends State<Chat> {
       _messages = List<Map<String, String>>.from(widget.existingMessages!);
       selectedModel = widget.choosenModel!;
     }
+    reasonable = AppConstants.reasonableCheck(selectedModel);
+    reasonableStatus(reasonable);
     _scrollToBottom();
   }
 
@@ -132,6 +134,7 @@ class _ChatState extends State<Chat> {
       }
       setState(() {
         _messages.add({"role": "user", "content": _controller.text});
+        _saveChatToStorage();
 
         // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -246,66 +249,86 @@ class _ChatState extends State<Chat> {
                         (BuildContext context, int index) {
                           final message = _messages[index];
                           final isUser = message["role"] == "user";
-                          return Align(
-                            alignment: isUser
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 20),
-                              decoration: BoxDecoration(
-                                color: isUser
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .tertiaryContainer,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(15),
-                                  topRight: const Radius.circular(15),
-                                  bottomLeft: isUser
-                                      ? const Radius.circular(15)
-                                      : Radius.zero,
-                                  bottomRight: isUser
-                                      ? Radius.zero
-                                      : const Radius.circular(15),
-                                ),
-                              ),
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.7,
-                              ),
-                              child: Column(
-                                children: [
-                                  Markdown(
-                                    data: message["content"] ?? "",
-                                    selectable: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    styleSheet: MarkdownStyleSheet(
-                                        p: const TextStyle(fontSize: 16.0),
-                                        code: const TextStyle(fontSize: 14.0)),
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 20),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: isUser
+                                  ? MainAxisAlignment.end
+                                  : MainAxisAlignment.start,
+                              children: [
+                                if (!isUser)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage: AssetImage(
+                                          AppConstants.getImg(selectedModel!)),
+                                      backgroundColor: Colors.transparent,
+                                    ),
                                   ),
-                                  // 复制按钮
-                                  isUser
-                                      ? Container()
-                                      : Align(
-                                          alignment: Alignment.bottomRight,
-                                          child: IconButton(
-                                            icon: const Icon(Icons.copy,
-                                                size: 20),
-                                            onPressed: () {
-                                              Clipboard.setData(ClipboardData(
-                                                  text: message["content"] ??
-                                                      ""));
-                                              showNotification("内容已复制");
-                                            },
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: isUser
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primaryContainer
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .tertiaryContainer,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(15),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Markdown(
+                                          data: message["content"] ?? "",
+                                          selectable: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          styleSheet: MarkdownStyleSheet(
+                                            p: const TextStyle(fontSize: 16.0),
+                                            code:
+                                                const TextStyle(fontSize: 14.0),
                                           ),
                                         ),
-                                ],
-                              ),
+                                        // 如果是模型回复，则显示复制按钮
+                                        if (!isUser)
+                                          Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: IconButton(
+                                              icon: const Icon(Icons.copy,
+                                                  size: 20),
+                                              onPressed: () {
+                                                Clipboard.setData(ClipboardData(
+                                                    text: message["content"] ??
+                                                        ""));
+                                                showNotification("内容已复制");
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                if (isUser)
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 8.0),
+                                    child: CircleAvatar(
+                                      radius: 22,
+                                      backgroundImage:
+                                          AssetImage('assets/images/user.png'),
+                                    ),
+                                  ),
+                              ],
                             ),
                           );
                         },
