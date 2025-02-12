@@ -19,3 +19,4 @@ export 'package:flutter_markdown/flutter_markdown.dart';
 export 'package:flutter_i18n/flutter_i18n.dart';
 export 'package:flutter_colorpicker/flutter_colorpicker.dart';
 export 'package:chatwhiz/mobile/view/chat/widgets/long_text_dialog.dart';
+export 'package:chatwhiz/mobile/models/chat_messages.dart';

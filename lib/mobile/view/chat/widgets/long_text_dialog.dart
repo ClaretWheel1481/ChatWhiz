@@ -30,6 +30,19 @@ void showLongTextBottomSheet(
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    FlutterI18n.translate(context, "close"),
+                  ),
+                ),
+              ],
+            ),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -48,20 +61,6 @@ void showLongTextBottomSheet(
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  child: Text(
-                    FlutterI18n.translate(context, "close"),
-                  ),
-                ),
-              ],
-            )
           ],
         ),
       );

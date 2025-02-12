@@ -27,14 +27,17 @@ class _HomePageState extends State<HomePage> {
   void loadChats() {
     List<dynamic> storedChats = _box.read<List>('chats') ?? [];
     chatsList = storedChats.map<Map<String, dynamic>>((dynamic chat) {
+      final messages = (chat["messages"] as List<dynamic>)
+          .map<ChatMessage>(
+              (m) => ChatMessage.fromMap(Map<String, String>.from(m)))
+          .toList();
       return {
         "title": chat["title"],
         "subtitle": chat["subtitle"],
-        "messages": (chat["messages"] as List<dynamic>)
-            .map<Map<String, String>>((m) => Map<String, String>.from(m))
-            .toList(),
+        "messages": messages,
       };
     }).toList();
+    setState(() {});
   }
 
   // 删除对话
@@ -93,8 +96,9 @@ class _HomePageState extends State<HomePage> {
                           maxLines: 1,
                         ),
                         subtitle: Text(
-                            "${FlutterI18n.translate(context, "model")}：${chat["subtitle"] ?? FlutterI18n.translate(context, "unknown")}",
-                            style: const TextStyle(fontSize: 14)),
+                          "${FlutterI18n.translate(context, "model")}：${chat["subtitle"] ?? FlutterI18n.translate(context, "unknown")}",
+                          style: const TextStyle(fontSize: 14),
+                        ),
                         onTap: () {
                           Get.to(() => Chat(
                                     isNew: false,
@@ -103,13 +107,12 @@ class _HomePageState extends State<HomePage> {
                                   ))!
                               .then((_) {
                             loadChats();
-                            setState(() {});
                           });
                         },
                         trailing: IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            // 删除对话
+                            // 删除对话前弹出确认对话框
                             showDeleteDialog(context, index);
                           },
                         ),
@@ -130,7 +133,6 @@ class _HomePageState extends State<HomePage> {
                   ))!
               .then((_) {
             loadChats();
-            setState(() {});
           });
         },
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -140,6 +142,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // 删除确认对话框
   void showDeleteDialog(BuildContext context, int index) {
     showDialog(
       context: context,

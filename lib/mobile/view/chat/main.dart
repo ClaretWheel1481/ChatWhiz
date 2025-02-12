@@ -4,12 +4,13 @@ import 'package:dio/dio.dart' as d;
 class Chat extends StatefulWidget {
   final bool isNew;
   final String? choosenModel;
-  final List<Map<String, String>>? existingMessages;
-  const Chat(
-      {super.key,
-      required this.isNew,
-      this.choosenModel,
-      this.existingMessages});
+  final List<ChatMessage>? existingMessages;
+  const Chat({
+    super.key,
+    required this.isNew,
+    this.choosenModel,
+    this.existingMessages,
+  });
 
   @override
   State<Chat> createState() => _ChatState();
@@ -23,7 +24,7 @@ class _ChatState extends State<Chat> {
   int reasonable = 0; // 0 = 不可用, 1 = 可用, 2 = 强制
   bool onReasonable = false;
   bool allowReasonable = false;
-  List<Map<String, String>> _messages = [];
+  List<ChatMessage> _messages = [];
   String? selectedModel;
   bool isLoading = false;
   String _languageCode = 'en';
@@ -39,7 +40,7 @@ class _ChatState extends State<Chat> {
     });
 
     if (!widget.isNew && widget.existingMessages != null) {
-      _messages = List<Map<String, String>>.from(widget.existingMessages!);
+      _messages = List<ChatMessage>.from(widget.existingMessages!);
       selectedModel = widget.choosenModel!;
     }
     reasonable = AppConstants.reasonableCheck(selectedModel);
@@ -84,20 +85,21 @@ class _ChatState extends State<Chat> {
   // 存储完整对话
   void _saveChatToStorage() {
     final storedChats = _box.read<List>('chats') ?? [];
-    final chatTitle = _messages.isNotEmpty
-        ? _messages.first["content"] ?? "unknown"
-        : "New Chat";
-    if (widget.isNew) {
+    final chatTitle =
+        _messages.isNotEmpty ? _messages.first.content : "New Chat";
+    if ((widget.isNew && _messages.length == 2) ||
+        (widget.isNew && _messages.length == 1)) {
       storedChats.add({
         "title": chatTitle,
         "subtitle": selectedModel,
-        "messages": _messages,
+        "messages": _messages.map((msg) => msg.toMap()).toList(),
       });
     } else {
       final index =
           storedChats.indexWhere((chat) => chat["title"] == chatTitle);
       if (index != -1) {
-        storedChats[index]["messages"] = _messages;
+        storedChats[index]["messages"] =
+            _messages.map((msg) => msg.toMap()).toList();
       }
     }
     _box.write('chats', storedChats);
@@ -106,7 +108,10 @@ class _ChatState extends State<Chat> {
   // TODO: 实现请求模型API(需要做额外适配，如图像处理)
   Future<void> _fetchAIResponse(String apiUrl, apiKey) async {
     try {
-      final data = {"model": selectedModel, "messages": _messages};
+      final data = {
+        "model": selectedModel,
+        "messages": _messages.map((msg) => msg.toMap()).toList(),
+      };
       d.Response resp = await d.Dio().post(apiUrl,
           data: data,
           options: d.Options(headers: {
@@ -114,10 +119,10 @@ class _ChatState extends State<Chat> {
             'Content-Type': 'application/json',
           }));
       debugPrint(resp.statusMessage);
-      _messages.add({
-        'content': resp.data['choices'][0]['message']['content'],
-        'role': resp.data['choices'][0]['message']['role'],
-      });
+      _messages.add(ChatMessage(
+        role: resp.data['choices'][0]['message']['role'],
+        content: resp.data['choices'][0]['message']['content'],
+      ));
     } catch (e) {
       showNotification(
           FlutterI18n.translate(context, "check_network_and_apikey"));
@@ -128,7 +133,6 @@ class _ChatState extends State<Chat> {
   void _sendMessage() async {
     if (_controller.text.isNotEmpty) {
       isLoading = true;
-
       // 获取API地址
       final apiUrl = AppConstants.getAPI(selectedModel!);
 
@@ -141,22 +145,19 @@ class _ChatState extends State<Chat> {
         return;
       }
       setState(() {
-        _messages.add({"role": "user", "content": _controller.text});
-
+        _messages.add(ChatMessage(role: "user", content: _controller.text));
         // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Future.delayed(const Duration(milliseconds: 50), () {
             _scrollToBottom();
           });
         });
-
-        // 清空输入框
         _controller.clear();
       });
+
       await _fetchAIResponse(apiUrl, apiKey);
       _saveChatToStorage();
       setState(() {
-        // 滚动到底部
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Future.delayed(const Duration(milliseconds: 50), () {
             _scrollToBottom();
@@ -165,8 +166,8 @@ class _ChatState extends State<Chat> {
             });
           });
         });
-        isLoading = false;
       });
+      isLoading = false;
     } else {
       showNotification(FlutterI18n.translate(context, "input_content"));
     }
@@ -195,7 +196,7 @@ class _ChatState extends State<Chat> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _messages.first["content"]!,
+                        _messages.first.content,
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                         overflow: TextOverflow.ellipsis,
@@ -257,7 +258,7 @@ class _ChatState extends State<Chat> {
                       delegate: SliverChildBuilderDelegate(
                         (BuildContext context, int index) {
                           final message = _messages[index];
-                          final isUser = message["role"] == "user";
+                          final isUser = message.role == "user";
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -298,7 +299,7 @@ class _ChatState extends State<Chat> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Markdown(
-                                          data: message["content"] ?? "",
+                                          data: message.content,
                                           selectable: true,
                                           physics:
                                               const NeverScrollableScrollPhysics(),
@@ -309,7 +310,6 @@ class _ChatState extends State<Chat> {
                                                 const TextStyle(fontSize: 14.0),
                                           ),
                                         ),
-                                        // 如果是模型回复，则显示复制按钮
                                         if (!isUser)
                                           Align(
                                             alignment: Alignment.bottomRight,
@@ -318,8 +318,7 @@ class _ChatState extends State<Chat> {
                                                   size: 20),
                                               onPressed: () {
                                                 Clipboard.setData(ClipboardData(
-                                                    text: message["content"] ??
-                                                        ""));
+                                                    text: message.content));
                                                 showNotification(
                                                     FlutterI18n.translate(
                                                         context,
@@ -362,7 +361,6 @@ class _ChatState extends State<Chat> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15))),
                           padding: const EdgeInsets.all(18.0),
-                          // offset: const Offset(0, -10),
                           shadowColor: Colors.black38,
                           elevation: 8,
                           color:
@@ -383,9 +381,7 @@ class _ChatState extends State<Chat> {
                                   .colorScheme
                                   .onSecondaryContainer),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         GestureDetector(
                           onTap: allowReasonable
                               ? null
@@ -409,9 +405,7 @@ class _ChatState extends State<Chat> {
                                         }),
                               Text(
                                 FlutterI18n.translate(context, "reasoning"),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: const TextStyle(fontSize: 16),
                               )
                             ],
                           ),
