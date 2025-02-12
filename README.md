@@ -14,6 +14,7 @@ This project is still in development. If you encounter any issues, please submit
 - Local storage of API Key and dialog content to ensure data security
 - Custom primary color (Only available on mobile)
 - Markdown support in chat content
+- i18n support
 
 ## Screenshots
 
