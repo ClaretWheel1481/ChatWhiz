@@ -161,9 +161,6 @@ class _ChatState extends State<Chat> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Future.delayed(const Duration(milliseconds: 50), () {
             _scrollToBottom();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              _scrollToBottom();
-            });
           });
         });
       });

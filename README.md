@@ -10,7 +10,7 @@ This project is still in development. If you encounter any issues, please submit
 
 ## Features
 
-- Support OpenAI, Deepseek and other AI models (more to come)
+- Support OpenAI, Deepseek, ChatGLM and other AI models (more to come)
 - Local storage of API Key and dialog content to ensure data security
 - Custom primary color (Only available on mobile)
 - Markdown support in chat content
