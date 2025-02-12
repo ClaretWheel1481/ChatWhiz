@@ -23,12 +23,13 @@ class _MobileHomePageState extends State<MobileHomePage> {
     const Settings()
   ];
 
+  // 测试网络以便在iOS应用启动时获取权限
   void testInternet() async {
     try {
       d.Response resp = await d.Dio().get("https://www.baidu.com");
-      print(resp);
+      debugPrint(resp.statusMessage);
     } catch (e) {
-      showNotification("连接失败，请检查您的网络权限或设置！");
+      showNotification("网络连接失败，请检查您的权限或设置！");
     }
   }
 
@@ -42,7 +43,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 150),
+        duration: const Duration(milliseconds: 200),
         transitionBuilder: (Widget child, Animation<double> animation) {
           // 使用淡入淡出的过渡动画
           return FadeTransition(

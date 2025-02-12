@@ -14,11 +14,8 @@ dependencies:
 
   get:
   get_storage:
-  fluent_ui:
   dynamic_color:
-  bitsdojo_window:
   url_launcher:
-  device_info_plus:
   dio:
   flutter_colorpicker: 
   flutter_markdown: 

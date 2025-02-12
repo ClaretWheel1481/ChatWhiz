@@ -28,19 +28,6 @@
   </tr>
 </table>
 
-### 桌面端
-
-<table>
-  <tr>
-    <td><img width="277px" src="public/Desktop_Chat.png"></td>
-    <td><img width="277px" src="public/Desktop_API.png"></td>
-  </tr>
-  <tr>
-    <td><img width="277px" src="public/Desktop_Settings.png"></td>
-    <td><img width="277px" src="public/Desktop_Chat2.png"></td>
-  </tr>
-</table>
-
 ## 许可证
 
 [MIT](LICENSE) © Linxing Huang

@@ -29,19 +29,6 @@ This project is still in development. If you encounter any issues, please submit
   </tr>
 </table>
 
-### Desktop
-
-<table>
-  <tr>
-    <td><img width="277px" src="public/Desktop_Chat.png"></td>
-    <td><img width="277px" src="public/Desktop_API.png"></td>
-  </tr>
-  <tr>
-    <td><img width="277px" src="public/Desktop_Settings.png"></td>
-    <td><img width="277px" src="public/Desktop_Chat2.png"></td>
-  </tr>
-</table>
-
 ## License
 
 [MIT](LICENSE) © Linxing Huang

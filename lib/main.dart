@@ -1,23 +1,9 @@
-import 'package:chatwhiz/desktop/import.dart' as desktop;
-import 'package:chatwhiz/mobile/import.dart' as mobile;
-import 'package:flutter/material.dart' as md;
-import 'package:get/get.dart';
+import 'package:chatwhiz/mobile/import.dart';
 import 'import.dart';
-import 'package:chatwhiz/mobile/notify.dart' as mn;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-
-  // 设置窗口参数（仅适用于桌面端）
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    doWhenWindowReady(() {
-      appWindow.minSize = const Size(1080, 620);
-      appWindow.size = const Size(1080, 620);
-      appWindow.alignment = Alignment.center;
-      appWindow.show();
-    });
-  }
 
   runApp(MyApp());
 }
@@ -28,27 +14,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 根据平台决定加载 桌面端 或 移动端 UI
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      return _buildDesktopApp();
-    } else {
-      return _buildMobileApp();
-    }
-  }
-
-  /// 构建桌面端应用
-  Widget _buildDesktopApp() {
-    return FluentApp(
-      theme: FluentThemeData(
-        brightness: Brightness.light,
-        accentColor: Colors.blue,
-      ),
-      darkTheme: FluentThemeData(
-        brightness: Brightness.dark,
-        accentColor: Colors.blue,
-      ),
-      home: const desktop.DesktopHomePage(),
-    );
+    return _buildMobileApp();
   }
 
   /// 构建移动端应用
@@ -60,10 +26,10 @@ class MyApp extends StatelessWidget {
 
     if (Platform.isIOS || !monetStatus) {
       // 如果Monet被禁用，使用默认配色
-      final lightColorScheme = md.ColorScheme.fromSeed(
+      final lightColorScheme = ColorScheme.fromSeed(
         seedColor: colorSeed,
       );
-      final darkColorScheme = md.ColorScheme.fromSeed(
+      final darkColorScheme = ColorScheme.fromSeed(
         seedColor: colorSeed,
         brightness: Brightness.dark,
       );
@@ -76,24 +42,24 @@ class MyApp extends StatelessWidget {
               translationLoader: FileTranslationLoader(
                   useCountryCode: true, basePath: 'assets/locales'),
               missingTranslationHandler: (key, locale) {
-                mobile.showNotification("i18n loading error");
+                showNotification("i18n loading error");
               }),
         ],
-        scaffoldMessengerKey: mn.scaffoldMessengerKey,
-        theme: md.ThemeData(colorScheme: lightColorScheme),
-        darkTheme: md.ThemeData(colorScheme: darkColorScheme),
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        theme: ThemeData(colorScheme: lightColorScheme),
+        darkTheme: ThemeData(colorScheme: darkColorScheme),
         themeMode: _getThemeMode(themeMode),
         home: const MobileHomePage(),
       );
     }
 
     return DynamicColorBuilder(
-      builder: (md.ColorScheme? lightDynamic, md.ColorScheme? darkDynamic) {
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final lightColorScheme = lightDynamic?.harmonized() ??
-            md.ColorScheme.fromSwatch(primarySwatch: md.Colors.blue);
+            ColorScheme.fromSwatch(primarySwatch: Colors.blue);
         final darkColorScheme = darkDynamic?.harmonized() ??
-            md.ColorScheme.fromSwatch(
-              primarySwatch: md.Colors.blue,
+            ColorScheme.fromSwatch(
+              primarySwatch: Colors.blue,
               brightness: Brightness.dark,
             );
 
@@ -105,12 +71,12 @@ class MyApp extends StatelessWidget {
                 translationLoader: FileTranslationLoader(
                     useCountryCode: true, basePath: 'assets/locales'),
                 missingTranslationHandler: (key, locale) {
-                  mobile.showNotification("i18n loading error");
+                  showNotification("i18n loading error");
                 }),
           ],
-          scaffoldMessengerKey: mn.scaffoldMessengerKey,
-          theme: md.ThemeData(colorScheme: lightColorScheme),
-          darkTheme: md.ThemeData(colorScheme: darkColorScheme),
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          theme: ThemeData(colorScheme: lightColorScheme),
+          darkTheme: ThemeData(colorScheme: darkColorScheme),
           themeMode: _getThemeMode(themeMode),
           home: const MobileHomePage(),
         );
