@@ -40,6 +40,7 @@ class _SettingsState extends State<Settings> {
     Locale newLocale = Locale(languageCode);
     _box.write('languageCode', languageCode);
     await FlutterI18n.refresh(context, newLocale);
+    setState(() {});
   }
 
   // 动态构建语言选项
