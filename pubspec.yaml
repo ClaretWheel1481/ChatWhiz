@@ -21,6 +21,8 @@ dependencies:
   flutter_markdown: 
   flutter_i18n: 
   cupertino_icons: ^1.0.8
+  bitsdojo_window: 
+  fluent_ui: 
 
 dev_dependencies:
   flutter_test:
