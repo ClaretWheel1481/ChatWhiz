@@ -69,7 +69,7 @@ class _ChatState extends State<Chat> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => AIChat(isNew: true),
+                          builder: (context) => const AIChat(isNew: true),
                         ).then((_) {
                           _loadChats();
                         });

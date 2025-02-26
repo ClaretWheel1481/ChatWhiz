@@ -265,85 +265,127 @@ class _AIChatState extends State<AIChat> {
                   itemBuilder: (context, index) {
                     final message = _messages[index];
                     final isUser = message["role"] == "user"; // 判断是否是用户发送的消息
+                    final avatarUrl = isUser
+                        ? "assets/images/user.png"
+                        : AppConstants.getImg(selectedModel);
 
-                    return Align(
-                      alignment:
-                          isUser ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 5),
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: isUser
-                              ? const Color.fromARGB(255, 27, 154, 255)
-                              : Colors.purple,
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(15),
-                            topRight: const Radius.circular(15),
-                            bottomLeft: isUser
-                                ? const Radius.circular(15)
-                                : Radius.zero,
-                            bottomRight: isUser
-                                ? Radius.zero
-                                : const Radius.circular(15),
-                          ),
-                        ),
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.7,
-                        ),
-                        child: Column(
-                          children: [
-                            Markdown(
-                              data: message["content"] ?? "",
-                              selectable: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              styleSheet: MarkdownStyleSheet(
-                                  a: TextStyle(
-                                      fontSize: 16.0,
-                                      color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                                  h1: TextStyle(
-                                      color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                                  h2: TextStyle(
-                                      color: MediaQuery.of(context).platformBrightness == Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                                  p: TextStyle(
-                                      fontSize: 16.0,
-                                      color: MediaQuery.of(context).platformBrightness ==
-                                              Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                                  code: TextStyle(
-                                      fontSize: 14.0,
-                                      color: MediaQuery.of(context).platformBrightness ==
-                                              Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white)),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: isUser
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (!isUser) ...[
+                            CircleAvatar(
+                              backgroundImage: AssetImage(avatarUrl),
+                              radius: 20,
+                              backgroundColor:
+                                  MediaQuery.of(context).platformBrightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.transparent,
                             ),
-                            // 复制按钮
-                            isUser
-                                ? Container()
-                                : Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: IconButton(
-                                      icon: const Icon(FluentIcons.copy,
-                                          size: 20),
-                                      onPressed: () {
-                                        Clipboard.setData(ClipboardData(
-                                            text: message["content"] ?? ""));
-                                        showNotification(context, "通知",
-                                            "内容已复制。", InfoBarSeverity.success);
-                                      },
+                            const SizedBox(width: 10),
+                          ],
+                          // 消息内容
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isUser
+                                    ? const Color.fromARGB(255, 27, 154, 255)
+                                    : Colors.purple.withAlpha(233),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                              ),
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Markdown(
+                                    data: message["content"] ?? "",
+                                    selectable: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    styleSheet: MarkdownStyleSheet(
+                                      a: TextStyle(
+                                        fontSize: 16.0,
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                      h1: TextStyle(
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                      h2: TextStyle(
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                      p: TextStyle(
+                                        fontSize: 16.0,
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                      code: TextStyle(
+                                        fontSize: 14.0,
+                                        color: MediaQuery.of(context)
+                                                    .platformBrightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
                                     ),
                                   ),
+                                  // 复制按钮，仅对 AI 消息显示
+                                  if (!isUser) ...[
+                                    Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: IconButton(
+                                        icon: const Icon(FluentIcons.copy,
+                                            size: 20),
+                                        onPressed: () {
+                                          Clipboard.setData(ClipboardData(
+                                              text: message["content"] ?? ""));
+                                          showNotification(
+                                              context,
+                                              "通知",
+                                              "内容已复制。",
+                                              InfoBarSeverity.success);
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (isUser) ...[
+                            const SizedBox(width: 10),
+                            CircleAvatar(
+                              backgroundImage: AssetImage(avatarUrl),
+                              radius: 20,
+                            ),
                           ],
-                        ),
+                        ],
                       ),
                     );
                   },
